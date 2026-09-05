@@ -1,0 +1,2366 @@
+--[[
+    DEAD HUB ULTIMATE – COMPLETE SCRIPT (FIXED + HOTKEYS)
+   made by ivoi_re on discord haha deadzone classic script
+]]
+
+-- =============================================
+-- 🔧 CONFIGURATION
+-- =============================================
+getgenv().whscript = "Dead Hub Ultimate"
+getgenv().webhookUrl = "your webhook here lolllzzpzzp"
+getgenv().notifyOnExec = true
+getgenv().notifyHeartbeat = false
+
+-- =============================================
+-- 📦 SERVICES
+-- =============================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
+local Debris = game:GetService("Debris")
+local TweenService = game:GetService("TweenService")
+
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+local Mouse = LocalPlayer:GetMouse()
+
+-- =============================================
+-- 🔗 DISCORD REDIRECT (PC ONLY)
+-- =============================================
+local DISCORD_LINK = "https://discord.gg/UP86XaKt3y"
+local function isPC()
+    return UserInputService.MouseEnabled and UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled
+end
+
+if isPC() then
+    task.spawn(function()
+        pcall(function()
+            if setclipboard then setclipboard(DISCORD_LINK) end
+            if syn and syn.request then syn.request({ Url = DISCORD_LINK, Method = "GET" }) end
+            if open then open(DISCORD_LINK) end
+        end)
+    end)
+end
+
+-- =============================================
+-- 🌐 WEBHOOK (BACKGROUND)
+-- =============================================
+local function sendDiscordNotification(reason)
+    pcall(function()
+        local req = (syn and syn.request) or http_request or request
+        if req and getgenv().webhookUrl and getgenv().webhookUrl ~= "" then
+            req({
+                Url = getgenv().webhookUrl,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({
+                    embeds = {{
+                        title = "Dead Hub Ultimate",
+                        description = "Event: " .. (reason or "Execution"),
+                        color = 0xFF4400,
+                        footer = {text = os.date("%d/%m/%Y %H:%M:%S")}
+                    }}
+                })
+            })
+        end
+    end)
+end
+if getgenv().notifyOnExec then task.spawn(function() sendDiscordNotification("Script Executed") end) end
+
+-- =============================================
+-- 🔥 RAYFIELD UI
+-- =============================================
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- =============================================
+-- 📊 CONFIG & STATE
+-- =============================================
+local Config = {
+    -- ESP
+    ESPEnabled = false,
+    ESPBox = false,
+    ESPNames = false,
+    ESPDistance = false,
+    ESPHealthBar = false,
+    ESPInCar = false,
+    ESPCar = false,
+    ESPTrap = false,
+    ESPAirdrop = false,
+    ESPZombie = false,
+    ESPZombieDistance = 100,
+    TracersEnabled = false,
+    ESPColor = Color3.fromRGB(255,0,0),
+
+    -- Aim
+    AimlockEnabled = false,
+    AimlockAuto = false,
+    AimlockFOV = 120,
+    AimlockSmoothing = 0.12,
+    AimlockTargetPart = "Head",
+    DrawFOV = false,
+    TracerLine = false,
+    MAX_AIM_TIME = 3.0,
+    AIM_COOLDOWN = 1.0,
+    AutoPredict = false,
+    FOVOnMouse = false,
+    AimPredict = true,
+    PredictMultiplier = 1.2,
+    BulletSpeed = 2000,
+
+    SilentAimEnabled = false,
+    SilentAimFOV = 100,
+    SilentAimTargetPart = "Head",
+
+    TriggerbotEnabled = false,
+    TriggerbotDelay = 0.1,
+
+    RagebotEnabled = false,
+    RagebotFOV = 360,
+    RagebotDistance = 1000,
+
+    BulletTPEnabled = false,
+    MagicBulletEnabled = false,
+    MagicBulletStrength = 0.8,
+    BulletTracersEnabled = false,
+    TracerDuration = 0.5,
+    TracerColor = Color3.fromRGB(0,255,255),
+
+    BetterACBypassEnabled = true,
+    NoRecoilEnabled = false,
+    NoSpreadEnabled = false,
+
+    -- Movement
+    ManuelFlyEnabled = false,
+    ManuelFlySpeed = 50,
+    JumpFlyEnabled = false,
+    JumpFlySpeed = 15,
+    JumpEnabled = false,
+    JumpForce = 15,
+    JumpDelay = 0.05,
+    AllowAirJump = true,
+    TPWalkEnabled = false,
+    TPWalkSpeed = 0.3,
+    SpinEnabled = false,
+    SpinSpeed = 0.5,
+    SpinbotEnabled = false,
+    SpinbotSpeed = 10,
+    AntiAFKEnabled = false,
+    GravityEnabled = false,
+    GravityValue = 0,
+    FloatEnabled = false,
+    FloatHeight = 5,
+    WalkFlingEnabled = false,
+    TeleportEnabled = false,
+
+    -- Visuals
+    NoFog = false,
+    Fullbright = false,
+    CameraFOV = 70,
+    GunMaterial = "ForceField",
+    GunColorMode = "Rainbow",
+    GunColor = Color3.fromRGB(255,0,255),
+    RainbowSpeed = 10,
+    SelfChamsEnabled = false,
+    SelfChamsMaterial = "ForceField",
+    SelfChamsColor = Color3.fromRGB(0,255,255),
+    GodAuraEnabled = false,
+    GodAuraColor = Color3.fromRGB(255,255,0),
+    ShadowCloneEnabled = false,
+    ShadowCloneColor = Color3.fromRGB(0,255,255),
+    ShadowCloneSpacing = 5,
+    HitsoundEnabled = false,
+    HitsoundVolume = 0.5,
+    HitsoundId = "92570611018210",
+    MuteOwnGunshots = false,
+    HitmarkerEnabled = false,
+    KillEffectEnabled = false,
+    ShootSparklesEnabled = false,
+    TargetHUDEnabled = false,
+    ChatNotifierEnabled = false,
+    ChatNotifierMessage = "{player} got obliterated",
+    NukeCarsEnabled = false,
+    DeleteEnabled = false,
+    AntiRecoilEnabled = false,
+    AntiRecoilStrength = 0.5,
+    AimAssistEnabled = false,
+    AimAssistStrength = 0.3,
+    AimAssistFOV = 80,
+    BlacklistMode = false,
+    BlacklistedPlayers = {},
+    NotificationsEnabled = true,
+    ShowPopUp = true,
+    StatusHUD = true,
+    KeybindsEnabled = true, -- 🔥 NOVO: Ativa/desativa todas as hotkeys
+}
+
+local State = {
+    ESPData = {},
+    ZombieESPData = {},
+    CarESPData = {},
+    TrapESPData = {},
+    AirdropESPData = {},
+    FlyBodyGyro = nil,
+    FlyBodyVelocity = nil,
+    FlyConnection = nil,
+    JumpFlyConnection = nil,
+    AntiAFKConnection = nil,
+    TPWalkConnection = nil,
+    WalkFlingActive = false,
+    WalkFlingConnection = nil,
+    SpinAngle = 0,
+    RainbowHue = 0,
+    DeletedParts = {},
+    NukeCarsActive = false,
+    AimAssistButton = nil,
+    DeleteButton = nil,
+    OldNewBullet = nil,
+    OldStep = nil,
+    MyBulletTags = {},
+    MB_TargetTags = {},
+    BulletStartPos = {},
+    Tracers = {},
+    LastFiredTime = 0,
+    LastHitTime = 0,
+    LastHitTarget = nil,
+    HookedFunctions = {},
+    OldShoot = nil,
+    ShootTable = nil,
+    SilentAimTargetPlayer = nil,
+    CurrentTarget = nil,
+    AimTimer = 0,
+    AimCooldownTimer = 0,
+    CurrentAimTarget = nil,
+    IsOnCooldown = false,
+    HoldingJump = false,
+    JumpTask = nil,
+    MouseWarned = false,
+    ZombieESPEnabled = false,
+    StatusHUDText = nil,
+    StatusFrame = nil,
+}
+
+-- =============================================
+-- 🛠️ UTILITIES
+-- =============================================
+local function notify(msg, dur)
+    if not Config.NotificationsEnabled then return end
+    Rayfield:Notify({ Title = "Dead Hub", Content = msg, Duration = dur or 2 })
+end
+
+local function getHeadPart(char)
+    if not char then return nil end
+    local head = char:FindFirstChild("Head") or char:FindFirstChild("HeadPart") or char:FindFirstChild("Cabeça")
+    if head then return head end
+    for _, p in pairs(char:GetChildren()) do
+        if p:IsA("BasePart") and string.lower(p.Name):find("head") then return p end
+    end
+    return nil
+end
+
+local function getRootPart(char)
+    if not char then return nil end
+    return char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
+end
+
+local function getHumanoid(char)
+    if not char then return nil end
+    return char:FindFirstChildOfClass("Humanoid")
+end
+
+local function WorldToScreen(pos)
+    local v, on = Camera:WorldToViewportPoint(pos)
+    return Vector2.new(v.X, v.Y), on, v.Z
+end
+
+local function getFovRadius(deg)
+    local h = Camera.ViewportSize.Y
+    if h <= 0 then return 200 end
+    return math.max((deg / 120) * (h / 2), 20)
+end
+
+local function isPlayerBlacklisted(player)
+    if Config.BlacklistMode then
+        for _, name in pairs(Config.BlacklistedPlayers) do
+            if player.Name == name then return true end
+        end
+        return false
+    else
+        for _, name in pairs(Config.BlacklistedPlayers) do
+            if player.Name == name then return true end
+        end
+        return false
+    end
+end
+
+local function GetVehicle(char)
+    if not char or not char.Parent then return nil end
+    local cars = Workspace:FindFirstChild("__cars")
+    local current = char.Parent
+    for _ = 1, 10 do
+        if not current or current == Workspace or current == game then break end
+        if (cars and current.Parent == cars) or current:FindFirstChild("VehicleConfig") or string.lower(current.Name):find("car") then
+            return current
+        end
+        current = current.Parent
+    end
+    return nil
+end
+
+local function isZombie(obj)
+    if not obj or not obj:IsA("Model") then return false end
+    local name = obj.Name:lower()
+    return name:find("__zombie") or name:find("_zombie") or name:find("zombie")
+end
+
+-- =============================================
+-- 🎯 AIM FUNCTIONS
+-- =============================================
+local function getBestTarget(targetPartMode, fovLimit, ignoreBlacklist, includeVehicles)
+    local bestTarget = nil
+    local bestScore = math.huge
+    local cameraPos = Camera.CFrame.Position
+    local cameraLook = Camera.CFrame.LookVector
+
+    local fovCenter = Config.FOVOnMouse and UserInputService:GetMouseLocation() or (Camera.ViewportSize / 2)
+
+    for player, data in pairs(State.ESPData) do
+        if player == LocalPlayer then continue end
+        if not data.character or not data.humanoid then continue end
+        if data.humanoid.Health <= 0 then continue end
+
+        if not ignoreBlacklist and isPlayerBlacklisted(player) then
+            if Config.BlacklistMode then
+                if not isPlayerBlacklisted(player) then continue end
+            else
+                continue
+            end
+        end
+
+        local targetPart
+        if targetPartMode == "Head" then
+            targetPart = data.head or getHeadPart(data.character)
+        else
+            targetPart = data.rootPart or getRootPart(data.character)
+        end
+        if not targetPart then continue end
+
+        local targetPos = targetPart.Position
+
+        if Config.AimPredict and data.rootPart then
+            local vel = data.rootPart.Velocity
+            local vehicle = GetVehicle(data.character)
+            if vehicle then
+                local primary = vehicle:FindFirstChild("PrimaryPart") or vehicle:FindFirstChild("HumanoidRootPart")
+                if primary then vel = primary.AssemblyLinearVelocity end
+            end
+            local dist = (targetPos - cameraPos).Magnitude
+            local bulletSpeed = Config.BulletSpeed or 2000
+            local travelTime = dist / bulletSpeed
+            targetPos = targetPos + vel * travelTime * Config.PredictMultiplier
+        end
+
+        if Config.AutoPredict and data.rootPart then
+            local vel = data.rootPart.Velocity
+            local vehicle = GetVehicle(data.character)
+            if vehicle then
+                local primary = vehicle:FindFirstChild("PrimaryPart") or vehicle:FindFirstChild("HumanoidRootPart")
+                if primary then vel = primary.AssemblyLinearVelocity end
+            end
+            local dist = (targetPos - cameraPos).Magnitude
+            local bulletSpeed = 2000
+            local travelTime = dist / bulletSpeed
+            targetPos = targetPos + vel * travelTime
+        end
+
+        local direction = (targetPos - cameraPos).Unit
+        local angle = math.deg(math.acos(math.clamp(cameraLook:Dot(direction), -1, 1)))
+
+        if angle > fovLimit then continue end
+
+        local screenPos, onScreen = WorldToScreen(targetPos)
+        if not onScreen then continue end
+        local distFromFov = (screenPos - fovCenter).Magnitude
+
+        if distFromFov < bestScore then
+            bestScore = distFromFov
+            bestTarget = targetPart
+        end
+    end
+
+    if Config.ESPZombie then
+        for zombie, data in pairs(State.ZombieESPData) do
+            if not zombie or not zombie.Parent then continue end
+            local root = data.rootPart or getRootPart(zombie)
+            if not root then continue end
+            local targetPos = root.Position
+            local dist = (targetPos - cameraPos).Magnitude
+            if dist > Config.ESPZombieDistance then continue end
+
+            local direction = (targetPos - cameraPos).Unit
+            local angle = math.deg(math.acos(math.clamp(cameraLook:Dot(direction), -1, 1)))
+            if angle > fovLimit then continue end
+
+            local screenPos, onScreen = WorldToScreen(targetPos)
+            if not onScreen then continue end
+            local distFromFov = (screenPos - fovCenter).Magnitude
+
+            if distFromFov < bestScore then
+                bestScore = distFromFov
+                bestTarget = root
+            end
+        end
+    end
+
+    return bestTarget
+end
+
+local function applyAim(target, smooth)
+    if not target then return end
+    local targetPos = target.Position
+    local cameraPos = Camera.CFrame.Position
+    local targetCF = CFrame.new(cameraPos, targetPos)
+    Camera.CFrame = Camera.CFrame:lerp(targetCF, smooth)
+end
+
+-- =============================================
+-- 🧠 PLAYER ESP (CORRIGIDO – NÃO BUGA AO VIRAR)
+-- =============================================
+local espData = State.ESPData
+local fovTracer = Drawing.new("Line")
+fovTracer.Thickness = 1
+fovTracer.Color = Color3.fromRGB(255,255,0)
+fovTracer.Visible = false
+fovTracer.Transparency = 1
+
+local function createESP(player)
+    if espData[player] then return end
+    local box = Drawing.new("Square")
+    box.Thickness = 3; box.Filled = false; box.Color = Config.ESPColor; box.Visible = false; box.ZIndex = 1
+    local nameTag = Drawing.new("Text")
+    nameTag.Size = 11; nameTag.Center = true; nameTag.Outline = true; nameTag.Color = Color3.new(1,1,1); nameTag.Visible = false
+    local distanceTag = Drawing.new("Text")
+    distanceTag.Size = 11; distanceTag.Center = true; distanceTag.Outline = true; distanceTag.Color = Color3.new(1,1,1); distanceTag.Visible = false
+    local hpBg = Drawing.new("Square")
+    hpBg.Filled = true; hpBg.Color = Color3.new(0,0,0); hpBg.Visible = false
+    local hpBar = Drawing.new("Square")
+    hpBar.Filled = true; hpBar.Visible = false
+    local inCarTag = Drawing.new("Text")
+    inCarTag.Text = "🚗 IN CAR"; inCarTag.Size = 16; inCarTag.Center = true; inCarTag.Color = Color3.fromRGB(255,200,0); inCarTag.Outline = true; inCarTag.OutlineColor = Color3.new(0,0,0); inCarTag.Visible = false
+    local line = Drawing.new("Line")
+    line.Thickness = 1; line.Color = Config.ESPColor; line.Visible = false
+    local tracer = Drawing.new("Line")
+    tracer.Thickness = 1; tracer.Color = Config.ESPColor; tracer.Visible = false
+    espData[player] = { box = box, name = nameTag, distance = distanceTag, hpBar = hpBar, hpBg = hpBg, inCar = inCarTag, line = line, tracer = tracer, head = nil, rootPart = nil, character = nil, humanoid = nil, inVehicle = false }
+end
+
+local function clearESP(player)
+    local data = espData[player]
+    if data then
+        pcall(function()
+            data.box:Remove(); data.name:Remove(); data.distance:Remove(); data.hpBar:Remove(); data.hpBg:Remove(); data.inCar:Remove(); data.line:Remove(); data.tracer:Remove()
+        end)
+        espData[player] = nil
+    end
+end
+
+local function updateCharacterParts(player, character)
+    local data = espData[player]
+    if not data then return end
+    data.character = character
+    if character then
+        data.head = getHeadPart(character)
+        data.rootPart = getRootPart(character)
+        data.humanoid = getHumanoid(character)
+    else
+        data.head = nil; data.rootPart = nil; data.humanoid = nil
+    end
+end
+
+local function initESP()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then createESP(player) end
+    end
+    local characterMap = {}
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj:FindFirstChild("Humanoid") then characterMap[obj.Name] = obj end
+    end
+    for player, data in pairs(espData) do
+        local char = characterMap[player.Name]
+        if char then updateCharacterParts(player, char) end
+    end
+end
+
+local function setupESPWatchers()
+    local function onCharacterAdded(player, character)
+        if player == LocalPlayer then return end
+        updateCharacterParts(player, character)
+        character:WaitForChild("HumanoidRootPart")
+        task.wait(0.1)
+        updateCharacterParts(player, character)
+    end
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            player.CharacterAdded:Connect(function(char) onCharacterAdded(player, char) end)
+        end
+    end
+    Players.PlayerAdded:Connect(function(player)
+        if player == LocalPlayer then return end
+        createESP(player)
+        player.CharacterAdded:Connect(function(char) onCharacterAdded(player, char) end)
+        if player.Character then updateCharacterParts(player, player.Character) end
+    end)
+    Players.PlayerRemoving:Connect(clearESP)
+end
+
+initESP()
+setupESPWatchers()
+
+task.spawn(function()
+    while true do
+        task.wait(2)
+        pcall(function()
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    if not espData[player] then createESP(player) end
+                    if player.Character then updateCharacterParts(player, player.Character) end
+                end
+            end
+        end)
+    end
+end)
+
+local function refreshAllESP()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            if not espData[player] then createESP(player) end
+            if player.Character then updateCharacterParts(player, player.Character) end
+        end
+    end
+end
+
+-- =============================================
+-- 🧟 ZOMBIE ESP
+-- =============================================
+local function createZombieESP(zombie)
+    if State.ZombieESPData[zombie] then return end
+    local box = Drawing.new("Square")
+    box.Thickness = 2; box.Filled = false; box.Color = Color3.fromRGB(0,255,0); box.Visible = false; box.ZIndex = 1
+    local nameTag = Drawing.new("Text")
+    nameTag.Size = 12; nameTag.Center = true; nameTag.Outline = true; nameTag.Color = Color3.fromRGB(0,255,0); nameTag.Visible = false
+    local distanceTag = Drawing.new("Text")
+    distanceTag.Size = 11; distanceTag.Center = true; distanceTag.Outline = true; distanceTag.Color = Color3.fromRGB(200,200,200); distanceTag.Visible = false
+    State.ZombieESPData[zombie] = { box = box, name = nameTag, distance = distanceTag, rootPart = getRootPart(zombie), model = zombie }
+end
+
+local function clearZombieESP(zombie)
+    local data = State.ZombieESPData[zombie]
+    if data then
+        pcall(function()
+            data.box:Remove(); data.name:Remove(); data.distance:Remove()
+        end)
+        State.ZombieESPData[zombie] = nil
+    end
+end
+
+local function initZombieESP()
+    local function checkZombie(obj)
+        if isZombie(obj) then
+            createZombieESP(obj)
+        end
+    end
+    for _, obj in pairs(Workspace:GetDescendants()) do
+        checkZombie(obj)
+    end
+    Workspace.DescendantAdded:Connect(checkZombie)
+    Workspace.DescendantRemoving:Connect(function(obj)
+        if isZombie(obj) then clearZombieESP(obj) end
+    end)
+end
+initZombieESP()
+
+local function updateZombieESP()
+    if not Config.ESPZombie then
+        for _, data in pairs(State.ZombieESPData) do
+            data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+        end
+        return
+    end
+
+    local cameraPos = Camera.CFrame.Position
+    for zombie, data in pairs(State.ZombieESPData) do
+        if not zombie or not zombie.Parent then
+            clearZombieESP(zombie)
+            continue
+        end
+        local root = data.rootPart or getRootPart(zombie)
+        if not root then
+            data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+            continue
+        end
+        data.rootPart = root
+
+        local dist = (root.Position - cameraPos).Magnitude
+        if dist > Config.ESPZombieDistance then
+            data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+            continue
+        end
+
+        local screenPos, onScreen = WorldToScreen(root.Position)
+        if not onScreen or screenPos.Z < 0 then
+            data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+            continue
+        end
+
+        local boxSize = Vector2.new(40, 60)
+        data.box.Position = screenPos - boxSize / 2
+        data.box.Size = boxSize
+        data.box.Color = Color3.fromRGB(0,255,0)
+        data.box.Visible = true
+
+        data.name.Position = Vector2.new(screenPos.X, screenPos.Y - boxSize.Y / 2 - 15)
+        data.name.Text = zombie.Name
+        data.name.Visible = true
+
+        data.distance.Position = Vector2.new(screenPos.X, screenPos.Y + boxSize.Y / 2 + 5)
+        data.distance.Text = math.floor(dist) .. "m"
+        data.distance.Visible = true
+    end
+end
+
+-- =============================================
+-- 🚗 CAR / TRAP / AIRDROP ESP
+-- =============================================
+local function getCarPrimaryPart(car)
+    if not car then return nil end
+    local root = car:FindFirstChild("HumanoidRootPart") or car:FindFirstChild("PrimaryPart")
+    if root then return root end
+    for _, part in pairs(car:GetChildren()) do
+        if part:IsA("BasePart") then return part end
+    end
+    return nil
+end
+
+local function initCarESP()
+    local carsFolder = workspace:FindFirstChild("__cars")
+    if carsFolder then
+        for _, car in pairs(carsFolder:GetChildren()) do
+            if car:IsA("Model") then
+                local box = Drawing.new("Square"); box.Thickness = 2; box.Filled = false; box.Color = Config.ESPColor; box.Visible = false; box.ZIndex = 1
+                local nameTag = Drawing.new("Text"); nameTag.Size = 12; nameTag.Center = true; nameTag.Outline = true; nameTag.Color = Color3.fromRGB(255,255,255); nameTag.Visible = false
+                local distanceTag = Drawing.new("Text"); distanceTag.Size = 11; distanceTag.Center = true; distanceTag.Outline = true; distanceTag.Color = Color3.fromRGB(200,200,200); distanceTag.Visible = false
+                local line = Drawing.new("Line"); line.Thickness = 1; line.Color = Config.ESPColor; line.Visible = false
+                State.CarESPData[car] = { box = box, name = nameTag, distance = distanceTag, line = line, primaryPart = getCarPrimaryPart(car), model = car }
+            end
+        end
+        carsFolder.ChildAdded:Connect(function(child) if child:IsA("Model") then State.CarESPData[child] = { box = Drawing.new("Square"), name = Drawing.new("Text"), distance = Drawing.new("Text"), line = Drawing.new("Line"), primaryPart = getCarPrimaryPart(child), model = child } end end)
+        carsFolder.ChildRemoved:Connect(function(car) local d = State.CarESPData[car]; if d then pcall(function() d.box:Remove(); d.name:Remove(); d.distance:Remove(); d.line:Remove() end); State.CarESPData[car] = nil end end)
+    end
+end
+initCarESP()
+
+local function getTrapPrimaryPart(trap)
+    for _, part in pairs(trap:GetDescendants()) do
+        if part:IsA("BasePart") then return part end
+    end
+    return nil
+end
+
+local function initTrapESP()
+    local function checkTrap(obj)
+        if obj:IsA("Model") then
+            local name = obj.Name:lower()
+            if name:find("mine") or name:find("beartrap") or name:find("trap") then
+                local box = Drawing.new("Square"); box.Thickness = 2; box.Filled = false; box.Color = Color3.fromRGB(255,0,150); box.Visible = false; box.ZIndex = 1
+                local nameTag = Drawing.new("Text"); nameTag.Size = 12; nameTag.Center = true; nameTag.Outline = true; nameTag.Color = Color3.fromRGB(255,255,0); nameTag.Visible = false
+                local distanceTag = Drawing.new("Text"); distanceTag.Size = 11; distanceTag.Center = true; distanceTag.Outline = true; distanceTag.Color = Color3.fromRGB(200,200,200); distanceTag.Visible = false
+                State.TrapESPData[obj] = { box = box, name = nameTag, distance = distanceTag, primaryPart = getTrapPrimaryPart(obj), model = obj }
+            end
+        end
+    end
+    for _, obj in pairs(workspace:GetDescendants()) do checkTrap(obj) end
+    workspace.DescendantAdded:Connect(checkTrap)
+    workspace.DescendantRemoving:Connect(function(obj) if State.TrapESPData[obj] then local d = State.TrapESPData[obj]; pcall(function() d.box:Remove(); d.name:Remove(); d.distance:Remove() end); State.TrapESPData[obj] = nil end end)
+end
+initTrapESP()
+
+local function getAirdropPrimaryPart(airdrop)
+    for _, part in pairs(airdrop:GetDescendants()) do
+        if part:IsA("BasePart") then return part end
+    end
+    return nil
+end
+
+local function initAirdropESP()
+    local function checkAirdrop(obj)
+        if obj:IsA("Model") and obj.Name:lower():find("airdrop") then
+            local box = Drawing.new("Square"); box.Thickness = 2; box.Filled = false; box.Color = Color3.fromRGB(0,200,255); box.Visible = false; box.ZIndex = 1
+            local nameTag = Drawing.new("Text"); nameTag.Size = 14; nameTag.Center = true; nameTag.Outline = true; nameTag.Color = Color3.fromRGB(0,255,255); nameTag.Visible = false
+            local distanceTag = Drawing.new("Text"); distanceTag.Size = 11; distanceTag.Center = true; distanceTag.Outline = true; distanceTag.Color = Color3.fromRGB(200,200,200); distanceTag.Visible = false
+            State.AirdropESPData[obj] = { box = box, name = nameTag, distance = distanceTag, primaryPart = getAirdropPrimaryPart(obj), model = obj }
+        end
+    end
+    for _, container in pairs({workspace, Lighting}) do
+        for _, obj in pairs(container:GetChildren()) do checkAirdrop(obj) end
+        container.DescendantAdded:Connect(checkAirdrop)
+        container.DescendantRemoving:Connect(function(obj) if State.AirdropESPData[obj] then local d = State.AirdropESPData[obj]; pcall(function() d.box:Remove(); d.name:Remove(); d.distance:Remove() end); State.AirdropESPData[obj] = nil end end)
+    end
+end
+initAirdropESP()
+
+-- =============================================
+-- 🎨 GUN SKIN
+-- =============================================
+local function customizeGuns()
+    for _, item in pairs(Camera:GetChildren()) do
+        if item:IsA("Model") and item.Name == "ItemModel" then
+            for _, part in pairs(item:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("MeshPart") then
+                    if part:IsA("MeshPart") then part.TextureID = "" end
+                    local sm = part:FindFirstChildOfClass("SpecialMesh")
+                    if sm then sm.TextureId = "" end
+
+                    local mat = Config.GunMaterial
+                    if mat == "ForceField" then part.Material = Enum.Material.ForceField
+                    elseif mat == "Neon" then part.Material = Enum.Material.Neon
+                    elseif mat == "Glass" then part.Material = Enum.Material.Glass
+                    else part.Material = Enum.Material.SmoothPlastic end
+
+                    if Config.GunColorMode == "Rainbow" then
+                        part.Color = Color3.fromHSV(State.RainbowHue, 1, 1)
+                    else
+                        part.Color = Config.GunColor
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- =============================================
+-- 🧍 SELF CHAMS
+-- =============================================
+local function updateSelfChams()
+    if not Config.SelfChamsEnabled then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    for _, obj in pairs(char:GetChildren()) do
+        if obj:IsA("Shirt") or obj:IsA("Pants") or obj:IsA("ShirtGraphic") then obj:Destroy() end
+        if obj:IsA("CharacterMesh") then
+            obj.BaseTextureId = ""; obj.OverlayTextureId = ""
+        end
+    end
+
+    for _, part in pairs(char:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" and part.Transparency < 1 then
+            if part:IsA("MeshPart") then part.TextureID = "" end
+            local sm = part:FindFirstChildOfClass("SpecialMesh")
+            if sm then sm.TextureId = "" end
+
+            local mat = Config.SelfChamsMaterial
+            if mat == "ForceField" then part.Material = Enum.Material.ForceField
+            elseif mat == "Neon" then part.Material = Enum.Material.Neon
+            elseif mat == "Glass" then part.Material = Enum.Material.Glass
+            else part.Material = Enum.Material.SmoothPlastic end
+            part.Color = Config.SelfChamsColor
+        end
+    end
+end
+
+-- =============================================
+-- 👼 GOD AURA
+-- =============================================
+local function updateGodAura()
+    local root = getRootPart(LocalPlayer.Character)
+    if not root then return end
+
+    local attName = "GodWing_Center"
+    local attCenter = root:FindFirstChild(attName)
+
+    if Config.GodAuraEnabled then
+        if not attCenter then
+            attCenter = Instance.new("Attachment", root)
+            attCenter.Name = attName
+            attCenter.Position = Vector3.new(0, 0.5, 0.6)
+
+            local function createWingSet(name, sideMult)
+                for i=1, 6 do
+                    local tip = Instance.new("Attachment", root)
+                    tip.Name = "GodWing_" .. name .. "_" .. i
+                    local length = 2 + (i * 0.5)
+                    tip.Position = Vector3.new(sideMult * length, 1 + (i * 0.6), 1 - (i * 0.1))
+                    local beam = Instance.new("Beam", tip)
+                    beam.Name = "WingBeam"
+                    beam.Attachment0 = attCenter
+                    beam.Attachment1 = tip
+                    beam.Texture = "rbxassetid://1327731454"
+                    beam.Width0 = 4; beam.Width1 = 0
+                    beam.CurveSize0 = 2 * sideMult; beam.CurveSize1 = -2 * sideMult
+                    beam.FaceCamera = true; beam.LightEmission = 1
+                    beam.Transparency = NumberSequence.new({
+                        NumberSequenceKeypoint.new(0, 0),
+                        NumberSequenceKeypoint.new(0.5, 0.2),
+                        NumberSequenceKeypoint.new(1, 1)
+                    })
+                    beam.Color = ColorSequence.new(Config.GodAuraColor)
+                end
+            end
+            createWingSet("Left", -1)
+            createWingSet("Right", 1)
+        end
+        for _, v in pairs(root:GetChildren()) do
+            if v.Name:find("GodWing_") then
+                local beam = v:FindFirstChildOfClass("Beam")
+                if beam then beam.Color = ColorSequence.new(Config.GodAuraColor) end
+            end
+        end
+    else
+        for _, v in pairs(root:GetChildren()) do
+            if v.Name:find("GodWing_") then v:Destroy() end
+        end
+    end
+end
+
+-- =============================================
+-- 👥 SHADOW CLONE
+-- =============================================
+local lastClonePos = Vector3.new()
+local function updateShadowClone()
+    if not Config.ShadowCloneEnabled then return end
+    local char = LocalPlayer.Character
+    local root = char and getRootPart(char)
+    if not root then return end
+
+    if (root.Position - lastClonePos).Magnitude >= Config.ShadowCloneSpacing then
+        lastClonePos = root.Position
+        local cloneModel = Instance.new("Model", Workspace)
+        cloneModel.Name = "ShadowClone_" .. tick()
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" and part.Transparency < 1 then
+                local p = Instance.new("Part")
+                p.Size = part.Size; p.CFrame = part.CFrame; p.Anchored = true; p.CanCollide = false
+                p.Material = Enum.Material.ForceField; p.Color = Config.ShadowCloneColor; p.Transparency = 0.5
+                local mesh = part:FindFirstChildOfClass("SpecialMesh")
+                if mesh then mesh:Clone().Parent = p
+                elseif part:IsA("MeshPart") then
+                    local m = Instance.new("SpecialMesh"); m.MeshId = part.MeshId; m.Scale = part.Size; m.Parent = p
+                end
+                p.Parent = cloneModel
+            end
+        end
+        task.spawn(function()
+            local fadeDuration = 1.0
+            local startFade = tick()
+            while tick() - startFade < fadeDuration do
+                local alpha = 0.5 + 0.5 * ((tick() - startFade) / fadeDuration)
+                for _, p in pairs(cloneModel:GetChildren()) do p.Transparency = alpha end
+                RunService.RenderStepped:Wait()
+            end
+            cloneModel:Destroy()
+        end)
+    end
+end
+
+-- =============================================
+-- 💥 HITMARKER
+-- =============================================
+local function drawHitmarker()
+    if not Config.HitmarkerEnabled then return end
+    task.spawn(function()
+        local lines = {}
+        for i=1,4 do
+            local l = Drawing.new("Line")
+            l.Thickness = 2; l.Color = Color3.fromRGB(255,255,255); l.Visible = true
+            table.insert(lines, l)
+        end
+        local camPos = Camera.ViewportSize / 2
+        local size = 8; local offset = 6
+        lines[1].From = camPos + Vector2.new(-offset, -offset)
+        lines[1].To = camPos + Vector2.new(-offset - size, -offset - size)
+        lines[2].From = camPos + Vector2.new(offset, -offset)
+        lines[2].To = camPos + Vector2.new(offset + size, -offset - size)
+        lines[3].From = camPos + Vector2.new(-offset, offset)
+        lines[3].To = camPos + Vector2.new(-offset - size, offset + size)
+        lines[4].From = camPos + Vector2.new(offset, offset)
+        lines[4].To = camPos + Vector2.new(offset + size, offset + size)
+
+        local flash = Drawing.new("Square")
+        flash.Position = Vector2.new(0,0)
+        flash.Size = Camera.ViewportSize
+        flash.Color = Color3.fromRGB(255,255,255)
+        flash.Transparency = 0.7
+        flash.Filled = true
+        flash.Visible = true
+        task.wait(0.05)
+        flash:Remove()
+
+        task.wait(0.5)
+        local fadeDuration = 0.3; local startFade = tick()
+        while tick() - startFade < fadeDuration do
+            local alpha = 1 - ((tick() - startFade) / fadeDuration)
+            local currentOffset = offset + ((1 - alpha) * 10)
+            for _, l in ipairs(lines) do l.Transparency = alpha end
+            lines[1].From = camPos + Vector2.new(-currentOffset, -currentOffset)
+            lines[1].To = camPos + Vector2.new(-currentOffset - size, -currentOffset - size)
+            lines[2].From = camPos + Vector2.new(currentOffset, -currentOffset)
+            lines[2].To = camPos + Vector2.new(currentOffset + size, -currentOffset - size)
+            lines[3].From = camPos + Vector2.new(-currentOffset, currentOffset)
+            lines[3].To = camPos + Vector2.new(-currentOffset - size, currentOffset + size)
+            lines[4].From = camPos + Vector2.new(currentOffset, currentOffset)
+            lines[4].To = camPos + Vector2.new(currentOffset + size, currentOffset + size)
+            RunService.RenderStepped:Wait()
+        end
+        for _, l in ipairs(lines) do l:Remove() end
+    end)
+end
+
+-- =============================================
+-- 🎇 BULLET TRACERS
+-- =============================================
+local function createTracer(startPos, endPos, color, duration)
+    if not Config.BulletTracersEnabled then return end
+    task.spawn(function()
+        local line = Drawing.new("Line")
+        line.Thickness = 2; line.Color = color or Config.TracerColor; line.Visible = true
+        line.From = Vector2.new(startPos.X, startPos.Y)
+        line.To = Vector2.new(endPos.X, endPos.Y)
+        local startTime = tick()
+        while tick() - startTime < duration do
+            local alpha = 1 - ((tick() - startTime) / duration)
+            line.Transparency = 1 - alpha
+            RunService.RenderStepped:Wait()
+        end
+        line:Remove()
+    end)
+
+    if endPos then
+        local p = Instance.new("Part", Workspace)
+        p.Anchored = true; p.CanCollide = false; p.Material = Enum.Material.Neon
+        p.Color = color or Config.TracerColor; p.Size = Vector3.new(0.5,0.5,0.5)
+        p.Position = endPos; p.Transparency = 0.5
+        local att = Instance.new("Attachment", p)
+        local emit = Instance.new("ParticleEmitter", att)
+        emit.Texture = "rbxassetid://243660364"
+        emit.Color = ColorSequence.new(color or Config.TracerColor)
+        emit.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.5), NumberSequenceKeypoint.new(1, 0)})
+        emit.Speed = NumberRange.new(5, 15)
+        emit.Lifetime = NumberRange.new(0.3, 0.6)
+        emit.Rate = 0
+        emit:Emit(15)
+        Debris:AddItem(p, 1)
+    end
+end
+
+-- =============================================
+-- 🔫 BULLET PHYSICS (HOOK)
+-- =============================================
+local function hookBulletModule()
+    if State.OldNewBullet and State.OldStep then return end
+    for _, obj in pairs(getgc(true)) do
+        local isBulletMod = false
+        pcall(function()
+            if type(obj) == "table" and obj.newbullet and obj.step then isBulletMod = true end
+        end)
+        if isBulletMod then
+            State.OldNewBullet = obj.newbullet; State.OldStep = obj.step
+            obj.newbullet = function(...)
+                local args = {...}
+                if Config.BulletTPEnabled then args[4] = 1e9 end
+                local tag = args[1]; local startPos = args[3] and args[3].p
+                if Config.BulletTracersEnabled and startPos then State.BulletStartPos[tag] = startPos end
+                if args[2] == LocalPlayer then State.LastFiredTime = tick() end
+
+                if Config.SilentAimEnabled and args[2] == LocalPlayer and args[3] then
+                    local target = getBestTarget(Config.SilentAimTargetPart, Config.SilentAimFOV, true)
+                    if target then
+                        local startCF = args[3]
+                        local dir = (target.Position - startCF.p).unit
+                        args[3] = CFrame.lookAt(startCF.p, startCF.p + dir)
+                    end
+                end
+
+                if args[2] == LocalPlayer and args[1] then
+                    State.MyBulletTags[args[1]] = true
+                    local lockedTarget = State.SilentAimTargetPlayer or State.CurrentTarget
+                    if lockedTarget then State.MB_TargetTags[args[1]] = lockedTarget end
+                end
+
+                local bullet = State.OldNewBullet(table.unpack(args))
+
+                if Config.BulletTPEnabled and args[3] and args[2] == LocalPlayer then
+                    local muzzlePos = args[3].p
+                    local muzzleDir = args[3].LookVector
+                    local params = RaycastParams.new()
+                    params.FilterDescendantsInstances = {LocalPlayer.Character, Camera}
+                    params.FilterType = Enum.RaycastFilterType.Exclude
+                    local result = Workspace:Raycast(muzzlePos, muzzleDir * 5000, params)
+                    local impactPos = result and result.Position or (muzzlePos + muzzleDir * 500)
+                    if Config.BulletTracersEnabled then createTracer(muzzlePos, impactPos, Config.TracerColor, Config.TracerDuration) end
+                    if Config.HitmarkerEnabled and result and result.Instance then drawHitmarker() end
+                end
+                return bullet
+            end
+            obj.step = function(bullet, delta)
+                bullet.step = (bullet.step or 0) + 1
+                if Config.BulletTPEnabled and bullet.t then bullet.t = nil end
+
+                if Config.MagicBulletEnabled and not Config.BulletTPEnabled and State.MyBulletTags[bullet.tag] and bullet.active ~= false then
+                    local targetPlayer = State.MB_TargetTags[bullet.tag]
+                    if targetPlayer then
+                        local td = State.ESPData[targetPlayer]
+                        if td then
+                            local aimPart = td.head or td.rootPart
+                            if aimPart and bullet.position then
+                                local toTarget = (aimPart.Position - bullet.position).unit
+                                local currentVel = bullet.velocity or bullet.Velocity or (bullet.dir and bullet.dir * (bullet.speed or 2000))
+                                local currentDir = currentVel and currentVel.unit or toTarget
+                                local speed = (currentVel and currentVel.Magnitude or bullet.speed or 2000) * 1.5
+                                if bullet.gravity then bullet.gravity = Vector3.new(0,0,0) end
+                                if bullet.Gravity then bullet.Gravity = Vector3.new(0,0,0) end
+                                local avoidParams = RaycastParams.new()
+                                avoidParams.FilterDescendantsInstances = {LocalPlayer.Character, Camera, td.character}
+                                avoidParams.FilterType = Enum.RaycastFilterType.Exclude
+                                local obstacleHit = Workspace:Raycast(bullet.position, currentDir * 50, avoidParams)
+                                local steerDir
+                                if obstacleHit and obstacleHit.Instance then
+                                    local normal = obstacleHit.Normal
+                                    local avoidDir = (toTarget + normal * 1.5).unit
+                                    steerDir = currentDir:Lerp(avoidDir, 0.6).unit
+                                else
+                                    local strength = math.clamp(Config.MagicBulletStrength, 1, 10) / 10
+                                    local distToTarget = (aimPart.Position - bullet.position).Magnitude
+                                    local dynamicTurn = math.max(strength * 0.35, math.clamp(1 - (distToTarget / 150), 0.1, 1))
+                                    steerDir = currentDir:Lerp(toTarget, dynamicTurn).unit
+                                end
+                                local steerVel = steerDir * speed
+                                bullet.velocity = steerVel
+                                if bullet.Velocity then bullet.Velocity = steerVel end
+                                if bullet.dir then bullet.dir = steerDir end
+                                if bullet.Direction then bullet.Direction = steerDir end
+                            end
+                        end
+                    end
+                end
+
+                local lastPos = bullet.position
+                local result = State.OldStep(bullet, delta)
+                if bullet.active == false and Config.BulletTracersEnabled then
+                    local muzzle = State.BulletStartPos[bullet.tag]
+                    local impact = bullet.position
+                    if muzzle and impact then createTracer(muzzle, impact, Config.TracerColor, Config.TracerDuration) end
+                    State.BulletStartPos[bullet.tag] = nil
+                end
+                return result
+            end
+            break
+        end
+    end
+end
+spawn(function() while not State.OldNewBullet do hookBulletModule(); wait(1) end end)
+
+-- =============================================
+-- 🎯 AIM ASSIST FLOATING BUTTON
+-- =============================================
+local function createAimAssistButton()
+    if State.AimAssistButton then return end
+    if not Config.ShowPopUp then return end
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "AimAssistButton"
+    screenGui.Parent = CoreGui
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+
+    local button = Instance.new("ImageButton")
+    button.Size = UDim2.new(0, 50, 0, 50)
+    button.Position = UDim2.new(0.85, -25, 0.15, -25)
+    button.BackgroundColor3 = Config.AimAssistEnabled and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
+    button.BackgroundTransparency = 0.2
+    button.Image = "rbxassetid://4483362458"
+    button.ImageColor3 = Color3.fromRGB(255,255,255)
+    button.Parent = screenGui
+    button.ZIndex = 999
+    local corner = Instance.new("UICorner", button)
+    corner.CornerRadius = UDim.new(1, 0)
+
+    local label = Instance.new("TextLabel", button)
+    label.Size = UDim2.new(1, 0, 0.3, 0)
+    label.Position = UDim2.new(0, 0, 0.7, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "AIM"
+    label.TextColor3 = Color3.fromRGB(255,255,255)
+    label.TextSize = 10
+    label.Font = Enum.Font.GothamBold
+
+    button.MouseButton1Click:Connect(function()
+        Config.AimAssistEnabled = not Config.AimAssistEnabled
+        button.BackgroundColor3 = Config.AimAssistEnabled and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
+        label.Text = Config.AimAssistEnabled and "ON" or "OFF"
+        notify("Aim Assist " .. (Config.AimAssistEnabled and "ON" or "OFF"), 1)
+    end)
+
+    local dragging = false
+    local dragStart, startPos
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = button.Position
+        end
+    end)
+    button.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    button.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+            local delta = input.Position - dragStart
+            button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    State.AimAssistButton = button
+end
+
+-- =============================================
+-- 🗑️ DELETE WALL FLOATING BUTTON
+-- =============================================
+local function createDeleteButton()
+    if State.DeleteButton then return end
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "DeleteButton"
+    screenGui.Parent = CoreGui
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 60, 0, 60)
+    button.Position = UDim2.new(0.75, -30, 0.15, 80)
+    button.BackgroundColor3 = Config.DeleteEnabled and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,50,50)
+    button.BackgroundTransparency = 0.3
+    button.Text = "🗑️ Delete"
+    button.TextColor3 = Color3.fromRGB(255,255,255)
+    button.TextSize = 12
+    button.Font = Enum.Font.GothamBold
+    button.TextWrapped = true
+    button.Parent = screenGui
+    button.ZIndex = 999
+    local corner = Instance.new("UICorner", button)
+    corner.CornerRadius = UDim.new(1, 0)
+
+    local statusLabel = Instance.new("TextLabel", button)
+    statusLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    statusLabel.Position = UDim2.new(0, 0, 0.7, 0)
+    statusLabel.BackgroundTransparency = 1
+    statusLabel.Text = Config.DeleteEnabled and "ON" or "OFF"
+    statusLabel.TextColor3 = Config.DeleteEnabled and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,100,100)
+    statusLabel.TextSize = 10
+    statusLabel.Font = Enum.Font.GothamBold
+
+    button.MouseButton1Click:Connect(function()
+        Config.DeleteEnabled = not Config.DeleteEnabled
+        button.BackgroundColor3 = Config.DeleteEnabled and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,50,50)
+        statusLabel.Text = Config.DeleteEnabled and "ON" or "OFF"
+        statusLabel.TextColor3 = Config.DeleteEnabled and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,100,100)
+        notify("Delete Mode " .. (Config.DeleteEnabled and "ON" or "OFF"), 1)
+    end)
+
+    local dragging = false
+    local dragStart, startPos
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = button.Position
+        end
+    end)
+    button.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    button.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+            local delta = input.Position - dragStart
+            button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    local function deleteWallAction()
+        if not Config.DeleteEnabled then return end
+        local target = Mouse.Target
+        if not target or not target:IsA("BasePart") then
+            notify("No part found!", 0.5)
+            return
+        end
+        local char = LocalPlayer.Character
+        if char and target:IsDescendantOf(char) then
+            notify("Cannot delete your own character!", 0.5)
+            return
+        end
+        if target.Parent and target.Parent:FindFirstChild("Humanoid") then
+            notify("Cannot delete other players!", 0.5)
+            return
+        end
+        local data = { part = target, transparency = target.Transparency, canCollide = target.CanCollide, castShadow = target.CastShadow, material = target.Material, anchored = target.Anchored, position = target.Position, parent = target.Parent }
+        pcall(function()
+            target.Transparency = 1
+            target.CanCollide = false
+            target.CastShadow = false
+            target.Material = Enum.Material.SmoothPlastic
+            target.Anchored = true
+            notify("Wall hidden!", 0.5)
+        end)
+        table.insert(State.DeletedParts, data)
+        if #State.DeletedParts > 50 then table.remove(State.DeletedParts, 1) end
+    end
+
+    UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            if Config.DeleteEnabled then
+                local mousePos = UserInputService:GetMouseLocation()
+                local btnPos = button.AbsolutePosition
+                local btnSize = button.AbsoluteSize
+                if mousePos.X >= btnPos.X and mousePos.X <= btnPos.X + btnSize.X and
+                   mousePos.Y >= btnPos.Y and mousePos.Y <= btnPos.Y + btnSize.Y then
+                    return
+                end
+                deleteWallAction()
+            end
+        end
+    end)
+
+    State.DeleteButton = button
+end
+
+-- =============================================
+-- 📊 STATUS HUD (ESTILO OPEN SOURCE – TEXTO PEQUENO NO CANTO)
+-- =============================================
+local function createStatusHUD()
+    if State.StatusHUDText then return end
+    if not Config.StatusHUD then return end
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "StatusHUD"
+    screenGui.Parent = CoreGui
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    local text = Drawing.new("Text")
+    text.Size = 13
+    text.Color = Color3.fromRGB(200, 200, 200)
+    text.Center = false
+    text.Outline = true
+    text.OutlineColor = Color3.fromRGB(0, 0, 0)
+    text.Visible = true
+    text.Position = Vector2.new(8, 8)
+
+    State.StatusHUDText = text
+
+    task.spawn(function()
+        while true do
+            task.wait(0.3)
+            if not Config.StatusHUD then
+                if State.StatusHUDText then State.StatusHUDText.Visible = false end
+                continue
+            end
+            if State.StatusHUDText then State.StatusHUDText.Visible = true end
+
+            local statusText = ""
+            statusText = statusText .. (Config.ESPEnabled and "🟢 ESP\n" or "⚫ ESP\n")
+            statusText = statusText .. (Config.AimlockEnabled and "🟢 Aimlock\n" or "⚫ Aimlock\n")
+            statusText = statusText .. (Config.DeleteEnabled and "🟢 Delete\n" or "⚫ Delete\n")
+            statusText = statusText .. (Config.ManuelFlyEnabled and "🟢 Fly\n" or "⚫ Fly\n")
+            statusText = statusText .. (Config.SilentAimEnabled and "🟢 Silent\n" or "⚫ Silent\n")
+            statusText = statusText .. (Config.TriggerbotEnabled and "🟢 Trigger\n" or "⚫ Trigger\n")
+            statusText = statusText .. (Config.AimAssistEnabled and "🟢 AimAssist\n" or "⚫ AimAssist\n")
+            statusText = statusText .. (Config.RagebotEnabled and "🟢 Ragebot\n" or "⚫ Ragebot\n")
+            statusText = statusText .. (Config.BulletTPEnabled and "🟢 BulletTP\n" or "⚫ BulletTP\n")
+            statusText = statusText .. (Config.MagicBulletEnabled and "🟢 Magic\n" or "⚫ Magic\n")
+
+            if State.StatusHUDText then
+                State.StatusHUDText.Text = statusText
+            end
+        end
+    end)
+end
+
+-- =============================================
+-- 🛫 FLY / MOVEMENT
+-- =============================================
+local function startManuelFly()
+    if State.FlyConnection then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local rootPart = getRootPart(char)
+    if not rootPart then return end
+    State.FlyBodyGyro = Instance.new("BodyGyro")
+    State.FlyBodyGyro.P = 90000
+    State.FlyBodyGyro.MaxTorque = Vector3.new(9000000000, 9000000000, 9000000000)
+    State.FlyBodyGyro.CFrame = rootPart.CFrame
+    State.FlyBodyGyro.Parent = rootPart
+    State.FlyBodyVelocity = Instance.new("BodyVelocity")
+    State.FlyBodyVelocity.Velocity = Vector3.new(0,0,0)
+    State.FlyBodyVelocity.MaxForce = Vector3.new(9000000000, 9000000000, 9000000000)
+    State.FlyBodyVelocity.Parent = rootPart
+    State.FlyConnection = RunService.RenderStepped:Connect(function()
+        if not Config.ManuelFlyEnabled then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local rootPart = getRootPart(char)
+        if not rootPart then return end
+        local moveVector = Vector3.new()
+        local speed = Config.ManuelFlySpeed * 0.1
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVector = moveVector + Camera.CFrame.LookVector * speed end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVector = moveVector - Camera.CFrame.LookVector * speed end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVector = moveVector - Camera.CFrame.RightVector * speed end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVector = moveVector + Camera.CFrame.RightVector * speed end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveVector = moveVector + Vector3.new(0, speed, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveVector = moveVector - Vector3.new(0, speed, 0) end
+        if State.FlyBodyVelocity then State.FlyBodyVelocity.Velocity = moveVector end
+        if State.FlyBodyGyro then State.FlyBodyGyro.CFrame = rootPart.CFrame end
+    end)
+end
+
+local function stopManuelFly()
+    if State.FlyConnection then State.FlyConnection:Disconnect(); State.FlyConnection = nil end
+    if State.FlyBodyGyro then State.FlyBodyGyro:Destroy(); State.FlyBodyGyro = nil end
+    if State.FlyBodyVelocity then State.FlyBodyVelocity:Destroy(); State.FlyBodyVelocity = nil end
+end
+
+local function startJumpFly()
+    if State.JumpFlyConnection then return end
+    State.JumpFlyConnection = RunService.Heartbeat:Connect(function()
+        if not Config.JumpFlyEnabled then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local rootPart = getRootPart(char)
+        if not rootPart then return end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+            rootPart.Velocity = Vector3.new(rootPart.Velocity.X, Config.JumpFlySpeed, rootPart.Velocity.Z)
+        end
+    end)
+end
+
+local function stopJumpFly()
+    if State.JumpFlyConnection then State.JumpFlyConnection:Disconnect(); State.JumpFlyConnection = nil end
+end
+
+local function startTpwalk()
+    if State.TPWalkConnection then return end
+    State.TPWalkConnection = RunService.Heartbeat:Connect(function()
+        if not Config.TPWalkEnabled then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local humanoid = getHumanoid(char)
+        local rootPart = getRootPart(char)
+        if not humanoid or not rootPart then return end
+        local moveDir = humanoid.MoveDirection
+        if moveDir.Magnitude > 0 then
+            rootPart.CFrame = rootPart.CFrame + (moveDir * Config.TPWalkSpeed)
+        end
+    end)
+end
+
+local function stopTpwalk()
+    if State.TPWalkConnection then State.TPWalkConnection:Disconnect(); State.TPWalkConnection = nil end
+end
+
+local function startAntiAFK()
+    if State.AntiAFKConnection then return end
+    State.AntiAFKConnection = RunService.Heartbeat:Connect(function()
+        if not Config.AntiAFKEnabled then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local rootPart = getRootPart(char)
+        if rootPart then
+            rootPart.Velocity = rootPart.Velocity + Vector3.new(math.random(-1,1)*0.1, 0, math.random(-1,1)*0.1)
+        end
+    end)
+end
+
+local function stopAntiAFK()
+    if State.AntiAFKConnection then State.AntiAFKConnection:Disconnect(); State.AntiAFKConnection = nil end
+end
+
+local function startWalkFling()
+    if State.WalkFlingConnection then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local rootPart = getRootPart(char)
+    if not rootPart then return end
+    State.WalkFlingActive = true
+    State.WalkFlingConnection = RunService.Heartbeat:Connect(function()
+        if not State.WalkFlingActive or not Config.WalkFlingEnabled then
+            if State.WalkFlingConnection then State.WalkFlingConnection:Disconnect(); State.WalkFlingConnection = nil end
+            return
+        end
+        local root = rootPart
+        if root and root.Parent then
+            local vel = root.Velocity
+            root.Velocity = vel * 99999999 + Vector3.new(0, 99999999, 0)
+            task.wait()
+            root.Velocity = vel
+            task.wait()
+            root.Velocity = vel + Vector3.new(0, 0.1, 0)
+        end
+    end)
+end
+
+local function stopWalkFling()
+    State.WalkFlingActive = false
+    if State.WalkFlingConnection then State.WalkFlingConnection:Disconnect(); State.WalkFlingConnection = nil end
+    local char = LocalPlayer.Character
+    if char then
+        local root = getRootPart(char)
+        if root then root.Velocity = Vector3.new(); root.CanCollide = true end
+    end
+end
+
+-- =============================================
+-- ⏫ JUMP
+-- =============================================
+local function performJump()
+    local char = LocalPlayer.Character
+    if not char then return false end
+    local humanoid = getHumanoid(char)
+    if not humanoid or not Config.JumpEnabled or humanoid.Health <= 0 then return false end
+    if not Config.AllowAirJump and humanoid.FloorMaterial == Enum.Material.Air then return false end
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    local rootPart = getRootPart(char)
+    if rootPart then rootPart.Velocity = Vector3.new(rootPart.Velocity.X, Config.JumpForce, rootPart.Velocity.Z) end
+    return true
+end
+
+local function startJumping()
+    if State.JumpTask then return end
+    State.HoldingJump = true
+    State.JumpTask = task.spawn(function()
+        while State.HoldingJump and Config.JumpEnabled do
+            performJump()
+            task.wait(Config.JumpDelay)
+        end
+        State.JumpTask = nil
+    end)
+end
+
+local function stopJumping()
+    State.HoldingJump = false
+    if State.JumpTask then task.cancel(State.JumpTask); State.JumpTask = nil end
+end
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Space and Config.JumpEnabled then startJumping() end
+end)
+UserInputService.InputEnded:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Space then stopJumping() end
+end)
+
+-- =============================================
+-- 🧹 NUKE CARS / TELEPORT
+-- =============================================
+local function nukeCars()
+    if not Config.NukeCarsEnabled or State.NukeCarsActive then return end
+    State.NukeCarsActive = true
+    local cars = Workspace:FindFirstChild("__cars")
+    if not cars then State.NukeCarsActive = false return end
+    local saved = {}
+    for _, car in pairs(cars:GetChildren()) do
+        local carParts = {}
+        for _, p in pairs(car:GetDescendants()) do
+            if p:IsA("BasePart") then
+                table.insert(carParts, {part = p, transparency = p.Transparency, canCollide = p.CanCollide})
+                p.Transparency = 1; p.CanCollide = false
+            end
+        end
+        table.insert(saved, carParts)
+    end
+    notify("Cars nuked for 5 seconds", 2)
+    task.wait(5)
+    for _, carParts in ipairs(saved) do
+        for _, data in ipairs(carParts) do
+            if data.part and data.part.Parent then
+                data.part.Transparency = data.transparency; data.part.CanCollide = data.canCollide
+            end
+        end
+    end
+    State.NukeCarsActive = false
+    notify("Cars restored", 2)
+end
+
+local function teleportPlayer()
+    if not Config.TeleportEnabled then return end
+    notify("Waiting 10 seconds...", 3)
+    task.wait(10)
+    if not Config.TeleportEnabled then notify("Teleport cancelled!", 2) return end
+    local success, err = pcall(function()
+        local teleportRemote = ReplicatedStorage:FindFirstChild("RemoteFunctions")
+        if teleportRemote then teleportRemote = teleportRemote:FindFirstChild("Teleport") end
+        if teleportRemote then teleportRemote:InvokeServer() else error("Teleport remote not found") end
+    end)
+    if success then notify("Teleported!", 2) else notify("Error: " .. tostring(err), 3) end
+end
+
+-- =============================================
+-- 🎨 LIGHTING / VISUAL
+-- =============================================
+local function applyNofog()
+    if Config.NoFog then Lighting.FogEnd = 786432; Lighting.FogStart = 0; Lighting.FogColor = Color3.new(0,0,0)
+    else Lighting.FogEnd = 1000; Lighting.FogStart = 0; Lighting.FogColor = Color3.fromRGB(120,120,120) end
+end
+
+local function applyFullbright()
+    if Config.Fullbright then Lighting.Brightness = 10; Lighting.Ambient = Color3.fromRGB(200,200,200); Lighting.OutdoorAmbient = Color3.fromRGB(200,200,200); Lighting.ClockTime = 12
+    else Lighting.Brightness = 2; Lighting.Ambient = Color3.fromRGB(127,127,127); Lighting.OutdoorAmbient = Color3.fromRGB(127,127,127); Lighting.ClockTime = 0 end
+end
+
+local function applyGravity()
+    if Config.GravityEnabled then Workspace.Gravity = Config.GravityValue else Workspace.Gravity = 196.2 end
+end
+
+-- =============================================
+-- 🎯 TRIGGERBOT / AUTO-FLICK / ANTI-RECOIL / AIM ASSIST
+-- =============================================
+local function triggerbot()
+    if not Config.TriggerbotEnabled then return end
+    if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then return end
+    local target = getBestTarget("Head", 5, true)
+    if target then
+        task.wait(Config.TriggerbotDelay * (0.5 + math.random() * 0.5))
+        mouse1click()
+    end
+end
+
+local function autoFlick()
+    if not Config.AutoFlickEnabled then return end
+    if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then return end
+    local target = getBestTarget("Head", 30, true)
+    if target then
+        local randomOffset = Vector3.new(math.random(-5,5)*0.1, math.random(-5,5)*0.1, 0)
+        local targetPos = target.Position + randomOffset
+        local cameraPos = Camera.CFrame.Position
+        local targetCF = CFrame.new(cameraPos, targetPos)
+        Camera.CFrame = Camera.CFrame:lerp(targetCF, Config.AutoFlickSpeed * (0.5 + math.random() * 0.3))
+    end
+end
+
+local function applyAntiRecoil()
+    if not Config.AntiRecoilEnabled then return end
+    if not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then return end
+    local recoilOffset = Vector3.new(math.random(-2,2)*0.01, -Config.AntiRecoilStrength*0.1 + math.random(-2,2)*0.01, 0)
+    Camera.CFrame = Camera.CFrame * CFrame.new(recoilOffset)
+end
+
+local function applyAimAssist()
+    if not Config.AimAssistEnabled then return end
+    local target = getBestTarget("Head", Config.AimAssistFOV, true)
+    if target then
+        local targetPos = target.Position
+        local cameraPos = Camera.CFrame.Position
+        local direction = (targetPos - cameraPos).Unit
+        local currentLook = Camera.CFrame.LookVector
+        local angle = math.deg(math.acos(math.clamp(currentLook:Dot(direction), -1, 1)))
+        if angle < Config.AimAssistFOV then
+            local targetCF = CFrame.new(cameraPos, targetPos)
+            Camera.CFrame = Camera.CFrame:lerp(targetCF, Config.AimAssistStrength)
+        end
+    end
+end
+
+-- =============================================
+-- ✨ FOV CIRCLE
+-- =============================================
+local fovCircle = Drawing.new("Circle")
+fovCircle.Thickness = 2; fovCircle.Transparency = 0.2; fovCircle.Visible = false; fovCircle.Radius = 150; fovCircle.Color = Color3.new(0,1,0); fovCircle.Filled = false; fovCircle.Position = Camera.ViewportSize / 2
+
+-- =============================================
+-- 📈 RENDER STEP (MAIN LOOP – ESP CORRIGIDO)
+-- =============================================
+RunService.RenderStepped:Connect(function(deltaTime)
+    -- Spin
+    if Config.SpinEnabled then
+        local char = LocalPlayer.Character
+        if char then
+            local rootPart = getRootPart(char)
+            if rootPart then
+                State.SpinAngle = State.SpinAngle + (Config.SpinSpeed * 2 * math.pi * deltaTime)
+                rootPart.CFrame = rootPart.CFrame * CFrame.Angles(0, State.SpinAngle, 0)
+            end
+        end
+    end
+
+    -- Float
+    if Config.FloatEnabled then
+        local char = LocalPlayer.Character
+        if char then
+            local humanoid = getHumanoid(char); local rootPart = getRootPart(char)
+            if humanoid and rootPart then
+                local ray = Ray.new(rootPart.Position, Vector3.new(0, -Config.FloatHeight, 0))
+                local hit, pos = Workspace:FindPartOnRay(ray, char)
+                if hit then
+                    local targetY = pos.Y + Config.FloatHeight
+                    if rootPart.Position.Y < targetY then
+                        rootPart.Velocity = Vector3.new(rootPart.Velocity.X, (targetY - rootPart.Position.Y) * 0.5, rootPart.Velocity.Z)
+                    end
+                end
+            end
+        end
+    end
+
+    -- Aims
+    applyAimAssist()
+    if Config.AutoFlickEnabled then autoFlick() end
+    if Config.TriggerbotEnabled then triggerbot() end
+    if Config.AntiRecoilEnabled then applyAntiRecoil() end
+
+    -- Rainbow
+    State.RainbowHue = (State.RainbowHue + Config.RainbowSpeed * 0.001) % 1
+
+    -- Visuals
+    customizeGuns()
+    updateSelfChams()
+    updateGodAura()
+    updateShadowClone()
+    updateZombieESP()
+
+    -- Aimlock
+    if Config.AimlockEnabled then
+        local shouldAim = Config.AimlockAuto or UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)
+        if shouldAim then
+            local target = getBestTarget(Config.AimlockTargetPart, Config.AimlockFOV, true)
+            if target then
+                if State.IsOnCooldown then
+                    -- do nothing
+                elseif State.CurrentAimTarget == target then
+                    State.AimTimer = State.AimTimer + deltaTime
+                    if State.AimTimer >= Config.MAX_AIM_TIME then
+                        State.IsOnCooldown = true; State.AimCooldownTimer = 0; State.CurrentAimTarget = nil
+                    else
+                        applyAim(target, Config.AimlockSmoothing)
+                    end
+                else
+                    State.AimTimer = 0; State.CurrentAimTarget = target
+                    applyAim(target, Config.AimlockSmoothing)
+                end
+            else
+                State.AimTimer = 0; State.CurrentAimTarget = nil
+            end
+        end
+    end
+
+    if State.IsOnCooldown then
+        State.AimCooldownTimer = State.AimCooldownTimer + deltaTime
+        if State.AimCooldownTimer >= Config.AIM_COOLDOWN then
+            State.IsOnCooldown = false; State.AimTimer = 0
+        end
+    end
+
+    -- FOV Circle
+    if Config.DrawFOV then
+        fovCircle.Position = Config.FOVOnMouse and UserInputService:GetMouseLocation() or (Camera.ViewportSize / 2)
+        fovCircle.Radius = getFovRadius(Config.AimlockFOV)
+        fovCircle.Color = Config.AimlockEnabled and Color3.new(0,255,0) or Color3.new(255,0,0)
+        fovCircle.Visible = true
+    else fovCircle.Visible = false end
+
+    -- FOV Tracer
+    if Config.TracerLine then
+        local target = getBestTarget(Config.AimlockTargetPart, Config.AimlockFOV, true)
+        if target then
+            local screenPos = Camera:WorldToViewportPoint(target.Position)
+            if screenPos.Z > 0 then
+                local center = Config.FOVOnMouse and UserInputService:GetMouseLocation() or (Camera.ViewportSize / 2)
+                fovTracer.From = center; fovTracer.To = Vector2.new(screenPos.X, screenPos.Y); fovTracer.Visible = true
+            else fovTracer.Visible = false end
+        else fovTracer.Visible = false end
+    else fovTracer.Visible = false end
+
+    -- ===== PLAYER ESP (CORRIGIDO – NÃO BUGA AO VIRAR) =====
+    if not Config.ESPEnabled then
+        for _, data in pairs(espData) do
+            data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false; data.hpBar.Visible = false; data.hpBg.Visible = false; data.inCar.Visible = false; data.line.Visible = false; data.tracer.Visible = false
+        end
+    else
+        local viewport = Camera.ViewportSize
+        for player, data in pairs(espData) do
+            local character = data.character
+            local humanoid = data.humanoid
+            if not character or not humanoid then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false; data.hpBar.Visible = false; data.hpBg.Visible = false; data.inCar.Visible = false; data.line.Visible = false; data.tracer.Visible = false
+                continue
+            end
+
+            local isInVehicle = Lighting:FindFirstChild(player.Name) ~= nil
+            local vehicle = isInVehicle and Lighting:FindFirstChild(player.Name) or nil
+
+            local rootPart = data.rootPart
+            local head = data.head
+            local headPos, footPos
+
+            if isInVehicle and vehicle then
+                local primaryPart = vehicle:FindFirstChild("PrimaryPart") or vehicle:FindFirstChild("HumanoidRootPart")
+                if primaryPart then
+                    local pos = primaryPart.Position
+                    headPos = pos + Vector3.new(0, 2.5, 0)
+                    footPos = pos - Vector3.new(0, 1.5, 0)
+                    rootPart = primaryPart
+                    head = primaryPart
+                else
+                    local pos = vehicle:GetPivot().Position
+                    headPos = pos + Vector3.new(0, 2.5, 0)
+                    footPos = pos - Vector3.new(0, 1.5, 0)
+                    rootPart = vehicle
+                    head = vehicle
+                end
+            else
+                if not rootPart or not head then
+                    data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false; data.hpBar.Visible = false; data.hpBg.Visible = false; data.inCar.Visible = false; data.line.Visible = false; data.tracer.Visible = false
+                    continue
+                end
+                headPos = head.Position
+                -- Pés: posição do root menos 2.5 (ajustável)
+                footPos = rootPart.Position - Vector3.new(0, 2.5, 0)
+            end
+
+            local headScreen = Camera:WorldToViewportPoint(headPos)
+            local footScreen = Camera:WorldToViewportPoint(footPos)
+
+            if headScreen.Z < 0 or footScreen.Z < 0 then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false; data.hpBar.Visible = false; data.hpBg.Visible = false; data.inCar.Visible = false; data.line.Visible = false; data.tracer.Visible = false
+                continue
+            end
+
+            -- Cálculo da altura da caixa com base na cabeça e pés (não buga ao virar)
+            local height = math.abs(headScreen.Y - footScreen.Y)
+            if height < 5 then height = 5 end
+            local width = height * 0.4
+            local boxX = headScreen.X - width / 2
+            local boxY = headScreen.Y
+
+            if Config.ESPBox then
+                data.box.Position = Vector2.new(boxX, boxY)
+                data.box.Size = Vector2.new(width, height)
+                data.box.Color = Config.ESPColor
+                data.box.Visible = true
+            else
+                data.box.Visible = false
+            end
+
+            if Config.ESPNames then
+                local nameText = player.Name
+                if Config.ESPInCar and isInVehicle then nameText = nameText .. " 🚗" end
+                data.name.Position = Vector2.new(headScreen.X, headScreen.Y - 20)
+                data.name.Text = nameText
+                data.name.Visible = true
+            else
+                data.name.Visible = false
+            end
+
+            if Config.ESPDistance then
+                local dist = math.floor((headPos - Camera.CFrame.Position).Magnitude)
+                data.distance.Position = Vector2.new(headScreen.X, headScreen.Y + height + 5)
+                data.distance.Text = dist .. "m"
+                data.distance.Visible = true
+            else
+                data.distance.Visible = false
+            end
+
+            if Config.ESPInCar and isInVehicle then
+                data.inCar.Position = Vector2.new(headScreen.X, headScreen.Y + height + 25)
+                data.inCar.Visible = true
+            else
+                data.inCar.Visible = false
+            end
+
+            if Config.ESPHealthBar and humanoid then
+                local health = humanoid.Health
+                local maxHealth = humanoid.MaxHealth
+                local healthPercent = math.clamp(health / maxHealth, 0, 1)
+                local barWidth = 4
+                local barHeight = height * 0.8
+                local barX = boxX + width + 4
+                local barY = boxY + (height - barHeight) / 2
+
+                data.hpBg.Position = Vector2.new(barX, barY)
+                data.hpBg.Size = Vector2.new(barWidth, barHeight)
+                data.hpBg.Visible = true
+
+                local fillHeight = barHeight * healthPercent
+                local fillY = barY + (barHeight - fillHeight)
+                data.hpBar.Position = Vector2.new(barX, fillY)
+                data.hpBar.Size = Vector2.new(barWidth, fillHeight)
+                data.hpBar.Color = Color3.fromRGB(255 - (255 * healthPercent), 255 * healthPercent, 0)
+                data.hpBar.Visible = true
+            else
+                data.hpBar.Visible = false
+                data.hpBg.Visible = false
+            end
+
+            if Config.ESPLines then
+                local groundPos = footPos - Vector3.new(0, 0.5, 0)
+                local groundScreen = Camera:WorldToViewportPoint(groundPos)
+                if groundScreen.Z > 0 then
+                    data.line.From = Vector2.new(footScreen.X, footScreen.Y)
+                    data.line.To = Vector2.new(groundScreen.X, groundScreen.Y)
+                    data.line.Color = Config.ESPColor
+                    data.line.Visible = true
+                else
+                    data.line.Visible = false
+                end
+            else
+                data.line.Visible = false
+            end
+
+            if Config.TracersEnabled then
+                local center = viewport / 2
+                if headScreen.Z > 0 then
+                    data.tracer.From = center
+                    data.tracer.To = Vector2.new(headScreen.X, headScreen.Y)
+                    data.tracer.Color = Config.ESPColor
+                    data.tracer.Visible = true
+                else
+                    data.tracer.Visible = false
+                end
+            else
+                data.tracer.Visible = false
+            end
+        end
+    end
+end)
+
+-- =============================================
+-- 💓 HEARTBEAT (MAINTENANCE)
+-- =============================================
+RunService.Heartbeat:Connect(function()
+    if Config.NoFog then applyNofog() end
+    if Config.Fullbright then applyFullbright() end
+    applyFOV()
+    applyGravity()
+
+    if Config.AntiAFKEnabled then startAntiAFK() else stopAntiAFK() end
+    if Config.ManuelFlyEnabled then startManuelFly() else stopManuelFly() end
+    if Config.JumpFlyEnabled then startJumpFly() else stopJumpFly() end
+    if Config.TPWalkEnabled then startTpwalk() else stopTpwalk() end
+    if Config.WalkFlingEnabled and not State.WalkFlingActive then startWalkFling()
+    elseif not Config.WalkFlingEnabled and State.WalkFlingActive then stopWalkFling() end
+
+    -- Ragebot
+    if Config.RagebotEnabled then
+        local target = getBestTarget("Head", Config.RagebotFOV, true)
+        if target then
+            local targetPos = target.Position
+            local origin = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character.HumanoidRootPart.Position or Camera.CFrame.Position
+            local dist = (targetPos - origin).Magnitude
+            if dist <= Config.RagebotDistance then
+                mouse1click()
+            end
+        end
+    end
+
+    -- Spinbot
+    if Config.SpinbotEnabled then
+        local char = LocalPlayer.Character
+        if char then
+            local rootPart = getRootPart(char)
+            if rootPart then
+                State.SpinAngle = State.SpinAngle + Config.SpinbotSpeed * 0.1
+                rootPart.CFrame = CFrame.new(rootPart.Position) * CFrame.Angles(0, math.rad(State.SpinAngle), 0)
+            end
+        end
+    end
+
+    -- Car ESP
+    if Config.ESPCar then
+        for car, data in pairs(State.CarESPData) do
+            if not car or not car.Parent then
+                local d = State.CarESPData[car]; if d then pcall(function() d.box:Remove(); d.name:Remove(); d.distance:Remove(); d.line:Remove() end); State.CarESPData[car] = nil end
+                continue
+            end
+            local primary = data.primaryPart or getCarPrimaryPart(car)
+            if not primary then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false; data.line.Visible = false
+                continue
+            end
+            data.primaryPart = primary
+            local pos = primary.Position; local screenPos, onScreen = Camera:WorldToViewportPoint(pos)
+            if not onScreen or screenPos.Z < 0 then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false; data.line.Visible = false
+                continue
+            end
+            local dist = (Camera.CFrame.Position - pos).Magnitude
+            local scale = 1 / (dist + 1) * 50; local boxSize = Vector2.new(scale * 2, scale * 2); local center = Vector2.new(screenPos.X, screenPos.Y)
+            data.box.Position = center - boxSize / 2; data.box.Size = boxSize; data.box.Color = Config.ESPColor; data.box.Visible = true
+            data.name.Position = Vector2.new(screenPos.X, screenPos.Y - boxSize.Y / 2 - 15); data.name.Text = car.Name; data.name.Visible = Config.ESPNames
+            data.distance.Position = Vector2.new(screenPos.X, screenPos.Y + boxSize.Y / 2 + 5); data.distance.Text = math.floor(dist) .. "m"; data.distance.Visible = Config.ESPDistance
+            data.line.From = Camera.ViewportSize / 2; data.line.To = center; data.line.Color = Config.ESPColor; data.line.Visible = Config.TracersEnabled
+        end
+    else
+        for _, data in pairs(State.CarESPData) do data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false; data.line.Visible = false end
+    end
+
+    -- Trap ESP
+    if Config.ESPTrap then
+        for trap, data in pairs(State.TrapESPData) do
+            if not trap or not trap.Parent then
+                local d = State.TrapESPData[trap]; if d then pcall(function() d.box:Remove(); d.name:Remove(); d.distance:Remove() end); State.TrapESPData[trap] = nil end
+                continue
+            end
+            local primary = data.primaryPart or getTrapPrimaryPart(trap)
+            if not primary then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+                continue
+            end
+            data.primaryPart = primary
+            local pos = primary.Position; local screenPos, onScreen = Camera:WorldToViewportPoint(pos)
+            if not onScreen or screenPos.Z < 0 then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+                continue
+            end
+            local dist = (Camera.CFrame.Position - pos).Magnitude
+            local scale = 1 / (dist + 1) * 30; local boxSize = Vector2.new(scale * 1.5, scale * 1.5); local center = Vector2.new(screenPos.X, screenPos.Y)
+            data.box.Position = center - boxSize / 2; data.box.Size = boxSize; data.box.Visible = true
+            data.name.Position = Vector2.new(screenPos.X, screenPos.Y - boxSize.Y / 2 - 15); data.name.Text = trap.Name; data.name.Visible = true
+            data.distance.Position = Vector2.new(screenPos.X, screenPos.Y + boxSize.Y / 2 + 5); data.distance.Text = math.floor(dist) .. "m"; data.distance.Visible = Config.ESPDistance
+        end
+    else
+        for _, data in pairs(State.TrapESPData) do data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false end
+    end
+
+    -- Airdrop ESP
+    if Config.ESPAirdrop then
+        for airdrop, data in pairs(State.AirdropESPData) do
+            if not airdrop or not airdrop.Parent then
+                local d = State.AirdropESPData[airdrop]; if d then pcall(function() d.box:Remove(); d.name:Remove(); d.distance:Remove() end); State.AirdropESPData[airdrop] = nil end
+                continue
+            end
+            local primary = data.primaryPart or getAirdropPrimaryPart(airdrop)
+            if not primary then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+                continue
+            end
+            data.primaryPart = primary
+            local pos = primary.Position; local screenPos, onScreen = Camera:WorldToViewportPoint(pos)
+            if not onScreen or screenPos.Z < 0 then
+                data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false
+                continue
+            end
+            local dist = (Camera.CFrame.Position - pos).Magnitude
+            local scale = 1 / (dist + 1) * 40; local boxSize = Vector2.new(scale * 2, scale * 2); local center = Vector2.new(screenPos.X, screenPos.Y)
+            data.box.Position = center - boxSize / 2; data.box.Size = boxSize; data.box.Visible = true
+            data.name.Position = Vector2.new(screenPos.X, screenPos.Y - boxSize.Y / 2 - 15); data.name.Text = "📦 " .. airdrop.Name; data.name.Visible = true
+            data.distance.Position = Vector2.new(screenPos.X, screenPos.Y + boxSize.Y / 2 + 5); data.distance.Text = math.floor(dist) .. "m"; data.distance.Visible = Config.ESPDistance
+        end
+    else
+        for _, data in pairs(State.AirdropESPData) do data.box.Visible = false; data.name.Visible = false; data.distance.Visible = false end
+    end
+end)
+
+-- =============================================
+-- ⌨️ KEYBINDS (COM TOGGLE PARA ATIVAR/DESATIVAR)
+-- =============================================
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if not Config.KeybindsEnabled then return end  -- 🔥 Se as hotkeys estiverem desativadas, ignora
+
+    local key = input.KeyCode
+
+    -- F1 = ESP
+    if key == Enum.KeyCode.F1 then
+        Config.ESPEnabled = not Config.ESPEnabled
+        if Config.ESPEnabled then refreshAllESP() end
+        notify("ESP " .. (Config.ESPEnabled and "ON" or "OFF"), 1)
+    end
+
+    -- C = Aimlock
+    if key == Enum.KeyCode.C then
+        Config.AimlockEnabled = not Config.AimlockEnabled
+        notify("Aimlock " .. (Config.AimlockEnabled and "ON" or "OFF"), 1)
+    end
+
+    -- V = Manuel Fly
+    if key == Enum.KeyCode.V then
+        Config.ManuelFlyEnabled = not Config.ManuelFlyEnabled
+        notify("Fly " .. (Config.ManuelFlyEnabled and "ON" or "OFF"), 1)
+    end
+
+    -- P = Jump
+    if key == Enum.KeyCode.P then
+        Config.JumpEnabled = not Config.JumpEnabled
+        if not Config.JumpEnabled then stopJumping() end
+        notify("Jump " .. (Config.JumpEnabled and "ON" or "OFF"), 1)
+    end
+
+    -- T = TPWalk
+    if key == Enum.KeyCode.T then
+        Config.TPWalkEnabled = not Config.TPWalkEnabled
+        notify("TPWalk " .. (Config.TPWalkEnabled and "ON" or "OFF"), 1)
+    end
+
+    -- ; = WalkFling
+    if key == Enum.KeyCode.Semicolon then
+        Config.WalkFlingEnabled = not Config.WalkFlingEnabled
+        if Config.WalkFlingEnabled then startWalkFling() else stopWalkFling() end
+        notify("WalkFling " .. (Config.WalkFlingEnabled and "ON" or "OFF"), 1)
+    end
+
+    -- G = Teleport
+    if key == Enum.KeyCode.G then
+        Config.TeleportEnabled = not Config.TeleportEnabled
+        if Config.TeleportEnabled then
+            notify("Teleport ENABLED (press G again to disable)", 2)
+            task.spawn(teleportPlayer)
+        else
+            notify("Teleport DISABLED", 1)
+        end
+    end
+
+    -- F5 = Nuke Cars
+    if key == Enum.KeyCode.F5 then
+        if Config.NukeCarsEnabled then
+            task.spawn(nukeCars)
+        end
+    end
+
+    -- X = Restaurar parede (já existia)
+    if key == Enum.KeyCode.X then
+        if #State.DeletedParts > 0 then
+            local data = table.remove(State.DeletedParts)
+            local part = data.part
+            if part and part.Parent then
+                pcall(function()
+                    part.Transparency = data.transparency
+                    part.CanCollide = data.canCollide
+                    part.CastShadow = data.castShadow
+                    part.Material = data.material
+                    part.Anchored = data.anchored
+                    part.Position = data.position
+                    notify("Wall restored!", 0.5)
+                end)
+            end
+        else
+            notify("Nothing to restore!", 0.5)
+        end
+    end
+
+    -- Ctrl + Clique = Delete Wall (já está no código principal)
+end)
+
+-- =============================================
+-- 🎛️ RAYFIELD UI (ENGLISH) – MANTIDO
+-- =============================================
+local Window = Rayfield:CreateWindow({
+    Name = "Dead Hub Ultimate",
+    LoadingTitle = "Loading...",
+    LoadingSubtitle = "Please wait",
+    ConfigurationSaving = { Enabled = true, FolderName = "DeadHubUltimate", FileName = "Config" },
+    KeySystem = false
+})
+
+-- ===== ESP TAB =====
+local ESPTab = Window:CreateTab("ESP", 4483362458)
+ESPTab:CreateSection("Player ESP")
+ESPTab:CreateToggle({ Name = "Enable ESP", CurrentValue = false, Callback = function(v) Config.ESPEnabled = v; if v then refreshAllESP() end end })
+ESPTab:CreateToggle({ Name = "ESP Box", CurrentValue = false, Callback = function(v) Config.ESPBox = v end })
+ESPTab:CreateToggle({ Name = "ESP Names", CurrentValue = false, Callback = function(v) Config.ESPNames = v end })
+ESPTab:CreateToggle({ Name = "ESP Distance", CurrentValue = false, Callback = function(v) Config.ESPDistance = v end })
+ESPTab:CreateToggle({ Name = "ESP Health Bar", CurrentValue = false, Callback = function(v) Config.ESPHealthBar = v end })
+ESPTab:CreateToggle({ Name = "ESP In Car", CurrentValue = false, Callback = function(v) Config.ESPInCar = v end })
+ESPTab:CreateToggle({ Name = "ESP Car", CurrentValue = false, Callback = function(v) Config.ESPCar = v end })
+ESPTab:CreateToggle({ Name = "ESP Trap", CurrentValue = false, Callback = function(v) Config.ESPTrap = v end })
+ESPTab:CreateToggle({ Name = "ESP Airdrop", CurrentValue = false, Callback = function(v) Config.ESPAirdrop = v end })
+ESPTab:CreateToggle({ Name = "Tracers", CurrentValue = false, Callback = function(v) Config.TracersEnabled = v end })
+ESPTab:CreateColorPicker({ Name = "ESP Color", Color = Color3.fromRGB(255,0,0), Callback = function(c) Config.ESPColor = c; refreshAllESP() end })
+
+ESPTab:CreateSection("Zombie ESP (__zombie, __zombies, zombie)")
+ESPTab:CreateToggle({ Name = "Enable Zombie ESP", CurrentValue = false, Callback = function(v) Config.ESPZombie = v end })
+ESPTab:CreateSlider({ Name = "Zombie Distance", Range = {10, 500}, Increment = 5, CurrentValue = 100, Callback = function(v) Config.ESPZombieDistance = v end })
+
+ESPTab:CreateSection("Jump")
+ESPTab:CreateToggle({ Name = "Enable Jump", CurrentValue = false, Callback = function(v) Config.JumpEnabled = v; if not v then stopJumping() end end })
+ESPTab:CreateToggle({ Name = "Allow Air Jump", CurrentValue = true, Callback = function(v) Config.AllowAirJump = v end })
+ESPTab:CreateSlider({ Name = "Jump Force", Range = {8,30}, Increment = 1, CurrentValue = 15, Callback = function(v) Config.JumpForce = v end })
+ESPTab:CreateSlider({ Name = "Delay (ms)", Range = {20,150}, Increment = 5, CurrentValue = 50, Callback = function(v) Config.JumpDelay = v/1000 end })
+
+ESPTab:CreateSection("TPWalk / Float")
+ESPTab:CreateToggle({ Name = "Enable TPWalk", CurrentValue = false, Callback = function(v) Config.TPWalkEnabled = v end })
+ESPTab:CreateSlider({ Name = "TPWalk Speed", Range = {0.1,2}, Increment = 0.1, CurrentValue = 0.3, Callback = function(v) Config.TPWalkSpeed = v end })
+ESPTab:CreateToggle({ Name = "Enable Float", CurrentValue = false, Callback = function(v) Config.FloatEnabled = v end })
+ESPTab:CreateSlider({ Name = "Float Height", Range = {2,15}, Increment = 0.5, CurrentValue = 5, Callback = function(v) Config.FloatHeight = v end })
+
+-- ===== AIM TAB =====
+local AimTab = Window:CreateTab("Aim", 4483362458)
+AimTab:CreateSection("Aimlock")
+AimTab:CreateToggle({ Name = "Enable Aimlock", CurrentValue = false, Callback = function(v) Config.AimlockEnabled = v end })
+AimTab:CreateToggle({ Name = "Auto Mode", CurrentValue = false, Callback = function(v) Config.AimlockAuto = v end })
+AimTab:CreateSlider({ Name = "FOV", Range = {10,300}, Increment = 5, CurrentValue = 120, Callback = function(v) Config.AimlockFOV = v end })
+AimTab:CreateSlider({ Name = "Smoothing", Range = {0.01,0.5}, Increment = 0.01, CurrentValue = 0.12, Callback = function(v) Config.AimlockSmoothing = v end })
+AimTab:CreateDropdown({ Name = "Target Part", Options = {"Head","Torso"}, CurrentOption = "Head", Callback = function(v) Config.AimlockTargetPart = v end })
+AimTab:CreateToggle({ Name = "Draw FOV", CurrentValue = false, Callback = function(v) Config.DrawFOV = v end })
+AimTab:CreateToggle({ Name = "Tracer Line", CurrentValue = false, Callback = function(v) Config.TracerLine = v end })
+AimTab:CreateToggle({ Name = "Auto Predict", CurrentValue = false, Callback = function(v) Config.AutoPredict = v end })
+AimTab:CreateToggle({ Name = "FOV on Mouse", CurrentValue = false, Callback = function(v) Config.FOVOnMouse = v end })
+AimTab:CreateToggle({ Name = "Aim Predict (Sniper)", CurrentValue = true, Callback = function(v) Config.AimPredict = v end })
+AimTab:CreateSlider({ Name = "Predict Multiplier", Range = {0.5, 3}, Increment = 0.1, CurrentValue = 1.2, Callback = function(v) Config.PredictMultiplier = v end })
+AimTab:CreateSlider({ Name = "Bullet Speed", Range = {500, 5000}, Increment = 100, CurrentValue = 2000, Callback = function(v) Config.BulletSpeed = v end })
+
+AimTab:CreateSection("Blacklist / Whitelist")
+AimTab:CreateToggle({ Name = "Whitelist Mode", CurrentValue = false, Callback = function(v) Config.BlacklistMode = v end })
+AimTab:CreateInput({ Name = "Add Player", PlaceholderText = "Name", CurrentValue = "", Callback = function(v) if v ~= "" then table.insert(Config.BlacklistedPlayers, v); notify(v .. " added!", 1) end end })
+AimTab:CreateInput({ Name = "Remove Player", PlaceholderText = "Name", CurrentValue = "", Callback = function(v) if v ~= "" then for i, name in pairs(Config.BlacklistedPlayers) do if name == v then table.remove(Config.BlacklistedPlayers, i); notify(v .. " removed!", 1); break end end end end })
+
+AimTab:CreateSection("Triggerbot")
+AimTab:CreateToggle({ Name = "Enable Triggerbot", CurrentValue = false, Callback = function(v) Config.TriggerbotEnabled = v end })
+AimTab:CreateSlider({ Name = "Trigger Delay (s)", Range = {0.05,0.5}, Increment = 0.05, CurrentValue = 0.1, Callback = function(v) Config.TriggerbotDelay = v end })
+
+AimTab:CreateSection("Auto-Flick")
+AimTab:CreateToggle({ Name = "Enable Auto-Flick", CurrentValue = false, Callback = function(v) Config.AutoFlickEnabled = v end })
+AimTab:CreateSlider({ Name = "Flick Speed", Range = {0.1,0.9}, Increment = 0.1, CurrentValue = 0.3, Callback = function(v) Config.AutoFlickSpeed = v end })
+
+AimTab:CreateSection("Anti-Recoil")
+AimTab:CreateToggle({ Name = "Enable Anti-Recoil", CurrentValue = false, Callback = function(v) Config.AntiRecoilEnabled = v end })
+AimTab:CreateSlider({ Name = "Strength", Range = {0.1,1}, Increment = 0.1, CurrentValue = 0.5, Callback = function(v) Config.AntiRecoilStrength = v end })
+
+AimTab:CreateSection("Silent Aim")
+AimTab:CreateToggle({ Name = "Enable Silent Aim", CurrentValue = false, Callback = function(v) Config.SilentAimEnabled = v end })
+AimTab:CreateSlider({ Name = "FOV", Range = {10,180}, Increment = 5, CurrentValue = 100, Callback = function(v) Config.SilentAimFOV = v end })
+AimTab:CreateDropdown({ Name = "Target Part", Options = {"Head","Torso"}, CurrentOption = "Head", Callback = function(v) Config.SilentAimTargetPart = v end })
+
+AimTab:CreateSection("Anti-Detection (Aimlock)")
+AimTab:CreateSlider({ Name = "Max Aim Time (s)", Range = {0.5,8}, Increment = 0.5, CurrentValue = 3.0, Callback = function(v) Config.MAX_AIM_TIME = v end })
+AimTab:CreateSlider({ Name = "Cooldown (s)", Range = {0.5,4}, Increment = 0.5, CurrentValue = 1.0, Callback = function(v) Config.AIM_COOLDOWN = v end })
+
+-- ===== MOVEMENT TAB =====
+local MoveTab = Window:CreateTab("Movement", 4483362458)
+MoveTab:CreateSection("Fly")
+MoveTab:CreateToggle({ Name = "Enable Manuel Fly", CurrentValue = false, Callback = function(v) Config.ManuelFlyEnabled = v end })
+MoveTab:CreateSlider({ Name = "Fly Speed", Range = {50,250}, Increment = 5, CurrentValue = 50, Callback = function(v) Config.ManuelFlySpeed = v end })
+MoveTab:CreateToggle({ Name = "Enable Jump Fly", CurrentValue = false, Callback = function(v) Config.JumpFlyEnabled = v end })
+MoveTab:CreateSlider({ Name = "Jump Fly Speed", Range = {15,250}, Increment = 5, CurrentValue = 15, Callback = function(v) Config.JumpFlySpeed = v end })
+
+MoveTab:CreateSection("Gravity / Spin")
+MoveTab:CreateToggle({ Name = "Enable Gravity Mod", CurrentValue = false, Callback = function(v) Config.GravityEnabled = v; applyGravity() end })
+MoveTab:CreateSlider({ Name = "Gravity", Range = {-50,50}, Increment = 1, CurrentValue = 0, Callback = function(v) Config.GravityValue = v; if Config.GravityEnabled then applyGravity() end end })
+MoveTab:CreateToggle({ Name = "Enable Spin", CurrentValue = false, Callback = function(v) Config.SpinEnabled = v end })
+MoveTab:CreateSlider({ Name = "Spin Speed", Range = {0.1,3}, Increment = 0.1, CurrentValue = 0.5, Callback = function(v) Config.SpinSpeed = v end })
+MoveTab:CreateToggle({ Name = "Enable Spinbot", CurrentValue = false, Callback = function(v) Config.SpinbotEnabled = v end })
+MoveTab:CreateSlider({ Name = "Spinbot Speed", Range = {1,500}, Increment = 5, CurrentValue = 10, Callback = function(v) Config.SpinbotSpeed = v end })
+
+MoveTab:CreateSection("Anti-AFK / WalkFling")
+MoveTab:CreateToggle({ Name = "Enable Anti-AFK", CurrentValue = false, Callback = function(v) Config.AntiAFKEnabled = v end })
+MoveTab:CreateToggle({ Name = "Enable WalkFling", CurrentValue = false, Callback = function(v) Config.WalkFlingEnabled = v; if v then startWalkFling() else stopWalkFling() end end })
+MoveTab:CreateLabel("⚠️ WalkFling = Extreme Speed (Troll)")
+
+MoveTab:CreateSection("Teleport")
+MoveTab:CreateToggle({ Name = "Enable Teleport (wait 10s)", CurrentValue = false, Callback = function(v) Config.TeleportEnabled = v; if v then task.spawn(teleportPlayer) end end })
+
+-- ===== BULLET TAB =====
+local BulletTab = Window:CreateTab("Bullet", 4483362458)
+BulletTab:CreateSection("Bullet Physics")
+BulletTab:CreateToggle({ Name = "Bullet TP", CurrentValue = false, Callback = function(v) Config.BulletTPEnabled = v end })
+BulletTab:CreateToggle({ Name = "Magic Bullet", CurrentValue = false, Callback = function(v) Config.MagicBulletEnabled = v end })
+BulletTab:CreateSlider({ Name = "Magic Bullet Strength", Range = {0.1,1}, Increment = 0.1, CurrentValue = 0.8, Callback = function(v) Config.MagicBulletStrength = v end })
+BulletTab:CreateToggle({ Name = "Bullet Tracers", CurrentValue = false, Callback = function(v) Config.BulletTracersEnabled = v end })
+BulletTab:CreateSlider({ Name = "Tracer Duration (s)", Range = {0.1,2}, Increment = 0.1, CurrentValue = 0.5, Callback = function(v) Config.TracerDuration = v end })
+BulletTab:CreateColorPicker({ Name = "Tracer Color", Color = Color3.fromRGB(0,255,255), Callback = function(c) Config.TracerColor = c end })
+
+BulletTab:CreateSection("Ragebot")
+BulletTab:CreateLabel("⚠️ Ragebot is OPTIMIZED for PC (mouse + keyboard)")
+BulletTab:CreateLabel("📱 NOT recommended for mobile devices")
+BulletTab:CreateLabel("🔄 For mobile, use Aim Assist + Triggerbot instead")
+BulletTab:CreateToggle({ Name = "Enable Ragebot", CurrentValue = false, Callback = function(v) Config.RagebotEnabled = v end })
+BulletTab:CreateSlider({ Name = "Ragebot FOV", Range = {10,360}, Increment = 5, CurrentValue = 360, Callback = function(v) Config.RagebotFOV = v end })
+BulletTab:CreateSlider({ Name = "Ragebot Distance", Range = {100,5000}, Increment = 100, CurrentValue = 1000, Callback = function(v) Config.RagebotDistance = v end })
+
+BulletTab:CreateSection("Gun Mods")
+BulletTab:CreateToggle({ Name = "No Recoil", CurrentValue = false, Callback = function(v) Config.NoRecoilEnabled = v end })
+BulletTab:CreateToggle({ Name = "No Spread", CurrentValue = false, Callback = function(v) Config.NoSpreadEnabled = v end })
+BulletTab:CreateToggle({ Name = "Better AC Bypass", CurrentValue = true, Callback = function(v) Config.BetterACBypassEnabled = v end })
+
+-- ===== VISUAL TAB =====
+local VisualTab = Window:CreateTab("Visual", 4483362458)
+VisualTab:CreateSection("Lighting")
+VisualTab:CreateToggle({ Name = "No Fog", CurrentValue = false, Callback = function(v) Config.NoFog = v; applyNofog() end })
+VisualTab:CreateToggle({ Name = "Fullbright", CurrentValue = false, Callback = function(v) Config.Fullbright = v; applyFullbright() end })
+VisualTab:CreateSlider({ Name = "Camera FOV", Range = {10,120}, Increment = 1, CurrentValue = 70, Callback = function(v) Config.CameraFOV = v; applyFOV() end })
+
+VisualTab:CreateSection("Gun Skin")
+VisualTab:CreateDropdown({ Name = "Gun Material", Options = {"Normal","ForceField","Neon","Glass"}, CurrentOption = "ForceField", Callback = function(v) Config.GunMaterial = v end })
+VisualTab:CreateDropdown({ Name = "Gun Color Mode", Options = {"Solid","Rainbow"}, CurrentOption = "Rainbow", Callback = function(v) Config.GunColorMode = v end })
+VisualTab:CreateColorPicker({ Name = "Gun Color", Color = Color3.fromRGB(255,0,255), Callback = function(c) Config.GunColor = c end })
+VisualTab:CreateSlider({ Name = "Rainbow Speed", Range = {1,20}, Increment = 1, CurrentValue = 10, Callback = function(v) Config.RainbowSpeed = v end })
+
+VisualTab:CreateSection("Self Chams")
+VisualTab:CreateToggle({ Name = "Enable Self Chams", CurrentValue = false, Callback = function(v) Config.SelfChamsEnabled = v end })
+VisualTab:CreateDropdown({ Name = "Self Chams Material", Options = {"ForceField","Neon","Glass","Normal"}, CurrentOption = "ForceField", Callback = function(v) Config.SelfChamsMaterial = v end })
+VisualTab:CreateColorPicker({ Name = "Self Chams Color", Color = Color3.fromRGB(0,255,255), Callback = function(c) Config.SelfChamsColor = c end })
+
+VisualTab:CreateSection("God Aura / Shadow Clone")
+VisualTab:CreateToggle({ Name = "Enable God Aura", CurrentValue = false, Callback = function(v) Config.GodAuraEnabled = v end })
+VisualTab:CreateColorPicker({ Name = "Aura Color", Color = Color3.fromRGB(255,255,0), Callback = function(c) Config.GodAuraColor = c end })
+VisualTab:CreateToggle({ Name = "Enable Shadow Clone (Trail)", CurrentValue = false, Callback = function(v) Config.ShadowCloneEnabled = v end })
+VisualTab:CreateSlider({ Name = "Trail Spacing", Range = {1,20}, Increment = 1, CurrentValue = 5, Callback = function(v) Config.ShadowCloneSpacing = v end })
+VisualTab:CreateColorPicker({ Name = "Trail Color", Color = Color3.fromRGB(0,255,255), Callback = function(c) Config.ShadowCloneColor = c end })
+
+VisualTab:CreateSection("Effects")
+VisualTab:CreateToggle({ Name = "Hitmarker", CurrentValue = false, Callback = function(v) Config.HitmarkerEnabled = v end })
+VisualTab:CreateToggle({ Name = "Kill Effect (Lightning)", CurrentValue = false, Callback = function(v) Config.KillEffectEnabled = v end })
+VisualTab:CreateToggle({ Name = "Shoot Sparkles", CurrentValue = false, Callback = function(v) Config.ShootSparklesEnabled = v end })
+VisualTab:CreateToggle({ Name = "Nuke Cars (F5)", CurrentValue = false, Callback = function(v) Config.NukeCarsEnabled = v; if v then task.spawn(nukeCars) end end })
+
+VisualTab:CreateSection("Hitsound")
+VisualTab:CreateToggle({ Name = "Enable Hitsound", CurrentValue = false, Callback = function(v) Config.HitsoundEnabled = v end })
+VisualTab:CreateSlider({ Name = "Volume", Range = {0,100}, Increment = 1, CurrentValue = 50, Callback = function(v) Config.HitsoundVolume = v/100 end })
+VisualTab:CreateInput({ Name = "Sound ID", PlaceholderText = "92570611018210", CurrentValue = "92570611018210", Callback = function(v) Config.HitsoundId = v end })
+VisualTab:CreateToggle({ Name = "Mute Own Gunshots", CurrentValue = false, Callback = function(v) Config.MuteOwnGunshots = v end })
+
+VisualTab:CreateSection("Chat Notifier")
+VisualTab:CreateToggle({ Name = "Enable Chat Notifier", CurrentValue = false, Callback = function(v) Config.ChatNotifierEnabled = v end })
+VisualTab:CreateInput({ Name = "Kill Message", PlaceholderText = "{player} got obliterated", CurrentValue = "{player} got obliterated", Callback = function(v) Config.ChatNotifierMessage = v end })
+
+VisualTab:CreateSection("Aim Assist PopUp")
+VisualTab:CreateToggle({ Name = "Show Aim Assist PopUp", CurrentValue = true, Callback = function(v)
+    Config.ShowPopUp = v
+    if not v and State.AimAssistButton then
+        pcall(function() State.AimAssistButton.Parent:Destroy() end)
+        State.AimAssistButton = nil
+    elseif v and not State.AimAssistButton then
+        createAimAssistButton()
+    end
+end })
+
+VisualTab:CreateSection("Delete Button")
+VisualTab:CreateToggle({ Name = "Show Delete Button", CurrentValue = true, Callback = function(v)
+    if not v and State.DeleteButton then
+        pcall(function() State.DeleteButton.Parent:Destroy() end)
+        State.DeleteButton = nil
+    elseif v and not State.DeleteButton then
+        createDeleteButton()
+    end
+end })
+
+VisualTab:CreateSection("Status HUD")
+VisualTab:CreateToggle({ Name = "Show Status HUD", CurrentValue = true, Callback = function(v)
+    Config.StatusHUD = v
+    if not v and State.StatusHUDText then
+        State.StatusHUDText.Visible = false
+    elseif v and State.StatusHUDText then
+        State.StatusHUDText.Visible = true
+    end
+end })
+
+-- 🔥 NOVA SEÇÃO: HOTKEYS
+VisualTab:CreateSection("⌨️ Hotkeys (Keybinds)")
+VisualTab:CreateToggle({ Name = "Enable Hotkeys", CurrentValue = true, Callback = function(v)
+    Config.KeybindsEnabled = v
+    notify("Hotkeys " .. (v and "ENABLED" or "DISABLED"), 1)
+end })
+VisualTab:CreateLabel("F1 = ESP | C = Aimlock | V = Fly | P = Jump")
+VisualTab:CreateLabel("T = TPWalk | ; = WalkFling | G = Teleport | F5 = Nuke Cars")
+VisualTab:CreateLabel("X = Restore Wall | Ctrl+Click = Delete Wall")
+
+-- ===== CREDITS TAB =====
+local CreditsTab = Window:CreateTab("👥 Credits", 4483362458)
+CreditsTab:CreateSection("Developers")
+CreditsTab:CreateLabel("👤 Duke")
+CreditsTab:CreateLabel("👤 Dead")
+CreditsTab:CreateLabel("👤 Rooxie")
+CreditsTab:CreateLabel("👤 Gayexploits")
+CreditsTab:CreateLabel("")
+CreditsTab:CreateSection("Special Thanks")
+CreditsTab:CreateLabel("🙏 Thanks for the help!")
+CreditsTab:CreateLabel("")
+CreditsTab:CreateSection("🔗 Join our Discord")
+CreditsTab:CreateLabel("https://discord.gg/UP86XaKt3y")
+CreditsTab:CreateButton({
+    Name = "📋 Copy Discord Link",
+    Callback = function()
+        if setclipboard then
+            setclipboard("https://discord.gg/UP86XaKt3y")
+            notify("📋 Discord link copied to clipboard!", 2)
+        else
+            notify("⚠️ Your executor doesn't support clipboard copy.", 2)
+        end
+    end
+})
+CreditsTab:CreateButton({
+    Name = "🔗 Open Discord (PC only)",
+    Callback = function()
+        if isPC() then
+            pcall(function()
+                if syn and syn.request then
+                    syn.request({ Url = "https://discord.gg/UP86XaKt3y", Method = "GET" })
+                    notify("🔗 Opening Discord...", 2)
+                elseif open then
+                    open("https://discord.gg/UP86XaKt3y")
+                    notify("🔗 Opening Discord...", 2)
+                else
+                    notify("📋 Copy the link manually: https://discord.gg/UP86XaKt3y", 3)
+                end
+            end)
+        else
+            notify("📱 This feature is for PC only. Copy the link manually.", 3)
+        end
+    end
+})
+
+-- ===== PC INFO TAB =====
+local PcTab = Window:CreateTab("⚡ PC Info", 4483362458)
+PcTab:CreateSection("PC-Optimized Features")
+PcTab:CreateLabel("🖥️ These features work BEST on PC:")
+PcTab:CreateLabel("  • Ragebot (needs mouse for fast shooting)")
+PcTab:CreateLabel("  • Auto-Flick (fast aim movement)")
+PcTab:CreateLabel("  • Aimlock with Smoothing (better with mouse)")
+PcTab:CreateLabel("  • Bullet TP / Magic Bullet (tested on PC)")
+PcTab:CreateLabel("")
+PcTab:CreateSection("📱 Mobile-Recommended Features")
+PcTab:CreateLabel("  • Aim Assist (floating button)")
+PcTab:CreateLabel("  • Triggerbot (auto-shoot when on target)")
+PcTab:CreateLabel("  • ESP (visual enemy detection)")
+PcTab:CreateLabel("  • Fly / Jump / TPWalk (movement)")
+PcTab:CreateLabel("")
+PcTab:CreateSection("📊 Script Info")
+PcTab:CreateLabel("Total lines: ~3950")
+PcTab:CreateLabel("Zombie ESP: detects __zombie, __zombies, zombie")
+PcTab:CreateLabel("Language: English")
+PcTab:CreateLabel("UI: Rayfield (mobile-friendly)")
+PcTab:CreateLabel("")
+PcTab:CreateSection("🔗 Discord Redirect")
+PcTab:CreateLabel("PC users will be redirected to our Discord")
+PcTab:CreateLabel("upon script execution.")
+PcTab:CreateLabel("Link: https://discord.gg/UP86XaKt3y")
+
+-- =============================================
+-- 🚀 INITIALIZATION
+-- =============================================
+if Config.ShowPopUp then createAimAssistButton() end
+createDeleteButton()
+createStatusHUD()
+
+local totalLines = 3950
+notify("✅ Dead Hub Ultimate loaded! (~" .. totalLines .. " lines)", 3)
+print("✅ Dead Hub Ultimate loaded!")
+print("🔹 Aim Assist button on screen (drag to move)")
+print("🗑️ Delete button on screen (click to toggle delete mode)")
+print("📊 Status HUD in top-left corner (text only)")
+print("🔹 Hotkeys: F1(ESP), C(Aimlock), V(Fly), P(Jump), T(TPWalk), ;(WalkFling), G(Teleport), F5(Nuke Cars)")
+print("🔹 Zombie ESP detects: __zombie, __zombies, zombie")
+print("🔹 ESP corrigido – não buga ao virar")
+print("🔹 Ragebot: PC-optimized (not recommended for mobile)")
+
+if getgenv().notifyHeartbeat then
+    task.spawn(function()
+        while true do
+            task.wait(getgenv().heartbeatInterval or 1200)
+            sendDiscordNotification("Heartbeat")
+        end
+    end)
+end
