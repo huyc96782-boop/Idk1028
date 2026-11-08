@@ -1,0 +1,987 @@
+local Rayfield, r30, r42, Combat, R162_Result, FromRGB, Character, IsMouseButtonPressed, Not_IsMouseButtonPressed_2, AimlockMobileGUI, Enable_Aimlock, UDim2_New, Color3_New, Lock_Tar, MouseButton1Click, Not_P1_2, MouseButton1Click_2, InputBegan_2, InputChanged, InputChanged_2, Input_8_Is_Nil, InputBegan_3, InputChanged_3, Input_11_Is_Nil_2, Square, Square_5, Text_3, Text_4, Square_6, Square_7, In_Car_2, Square_8, Line_2, FindFirstChild, Model, FindFirstChild_2, Model_2, Text_5, Text_6, Dictionary, HumanoidRootPart, WorldToViewportPoint, Airdrop, Model_3, Items, Fortification, Child_Name_Is_Beartrapbuild, P1_38_Name_Is_Beartrapbuild_2, P1_39_Name_Is_Beartrapbuild_3, CharacterAdded, Died, HumanoidRootPart_2, BodyGyro, Vector3_New, BodyVelocity, KeyCode_Is_Space, Not_P1_20, Target;
+local fenv = getfenv();
+if not pcall(function(p1, p2, p3, a, b, c)
+
+end) then
+else 
+    Rayfield = loadstring(
+        game:HttpGet("https://sirius.menu/rayfield")
+    )();
+end;
+local Window = Rayfield:CreateWindow({
+    ["LoadingTitle"] = "Deadzone Classic Menu v1.3 by r0oxie",
+    ["KeySettings"] = {
+        ["Subtitle"] = "Key in Discord Server",
+        ["Title"] = "Deadzone Classic Menu v1.3 | Key",
+        ["Key"] = {
+            "https://pastebin.com/raw/yj6b0m8Z"
+        },
+        ["GrabKeyFromSite"] = true,
+        ["SaveKey"] = true,
+        ["FileName"] = "Key",
+        ["Note"] = "Join server from video"
+    },
+    ["KeySystem"] = true,
+    ["DisableBuildWarnings"] = false,
+    ["Discord"] = {
+        ["Enabled"] = true,
+        ["RememberJoins"] = true,
+        ["Invite"] = "aGyTmgfZrS"
+    },
+    ["Name"] = "Deadzone Classic Menu v1.3 by r0oxie",
+    ["ConfigurationSaving"] = {
+        ["Enabled"] = true,
+        ["FileName"] = "DeadzoneClassicRooxiev13conf"
+    },
+    ["DisableRayfieldPrompts"] = false,
+    ["LoadingSubtitle"] = "by r0oxie",
+    ["Icon"] = 0,
+    ["Theme"] = "Default"
+});
+local Players = game:GetService("Players");
+local r22 = (
+    #workspace:GetChildren() - -1
+) + -1;
+local _ = r22 <= 1;
+if (
+    true and (
+        r22 >= 1
+    )
+) or false then
+else 
+    r30 = workspace:GetChildren()[1];
+    workspace.CurrentCamera:IsA("Model");
+end;
+if r30:IsA("Model") then 
+
+end;
+if (r30.Name == "Model") then
+else 
+    r42 = r22 + -1;
+    local _ = r42 <= 1;
+end;
+if (
+    true and (
+        r42 >= 1
+    )
+) or false then 
+    Combat = Window:CreateTab("Combat");
+end;
+Combat:CreateSection("Aimlock");
+Combat:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_2, a_2, b_2, c_2)
+
+    end,
+    ["Name"] = "Aimlock",
+    ["Flag"] = "AimlockToggle"
+});
+Combat:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_3, p2_3, p3_3, p4_3, a_3, b_3, c_3)
+
+    end,
+    ["Name"] = "Mobile Buttons (BETA)",
+    ["Flag"] = "MobileAimlockToggle"
+});
+Combat:CreateInput({
+    ["Name"] = "On/Off Aimlock Key",
+    ["Flag"] = "AimlockKeyInput",
+    ["CurrentValue"] = "C",
+    ["PlaceholderText"] = "Enter key (e.g. c,v,b)",
+    ["Callback"] = function(p1_4, p2_4, p3_4, p4_4, a_4, b_4, c_4)
+        Rayfield:Notify({
+            ["Image"] = "rewind",
+            ["Duration"] = 3,
+            ["Title"] = "Aimlock Key Changed",
+            ["Content"] = "New key: " .. p1_4
+        });
+    end,
+    ["RemoveTextAfterFocusLost"] = false
+});
+Combat:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_5, p2_5, p3_5, a_5, b_5, c_5)
+        fenv.FOVring.Visible = p1_5;
+    end,
+    ["Name"] = "Draw Fov",
+    ["Flag"] = "DrawFovToggle"
+});
+Combat:CreateSlider({
+    ["Callback"] = function(p1_6, p2_6, p3_6, p4_6, p5_6, a_6, b_6, c_6)
+
+    end,
+    ["Name"] = "FOV",
+    ["Suffix"] = "",
+    ["CurrentValue"] = 300,
+    ["Increment"] = 10,
+    ["Range"] = {
+        10,
+        1e3
+    },
+    ["Flag"] = "AimlockFOV"
+});
+local Visual = Window:CreateTab("Visual");
+Visual:CreateSection("Active ESP");
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_7, p2_7, p3_7, p4_7, p5_7, a_7, b_7, c_7)
+
+    end,
+    ["Name"] = "Active ESP",
+    ["Flag"] = "ActiveESPToggle"
+});
+Visual:CreateSection("Player ESP");
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_8, p2_8, p3_8, p4_8, p5_8, p6_8, a_8, b_8, c_8)
+
+    end,
+    ["Name"] = "ESP Box",
+    ["Flag"] = "ESPBoxToggle"
+});
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_9, p2_9, p3_9, p4_9, p5_9, p6_9, a_9, b_9, c_9)
+
+    end,
+    ["Name"] = "ESP Lines",
+    ["Flag"] = "ESPLinesToggle"
+});
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_10, p2_10, a_10, b_10, c_10)
+
+    end,
+    ["Name"] = "ESP Names",
+    ["Flag"] = "ESPNamesToggle"
+});
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_11, a_11, b_11, c_11)
+
+    end,
+    ["Name"] = "ESP Distance",
+    ["Flag"] = "ESPDistanceToggle"
+});
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_12, p2_12, p3_12, p4_12, p5_12, a_12, b_12, c_12)
+
+    end,
+    ["Name"] = "ESP HealthBar",
+    ["Flag"] = "ESPHealthBarToggle"
+});
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_13, a_13, b_13, c_13)
+
+    end,
+    ["Name"] = "ESP In Car",
+    ["Flag"] = "ESPInCarToggle"
+});
+Visual:CreateSection("Misc ESP");
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_14, p2_14, p3_14, p4_14, p5_14, a_14, b_14, c_14)
+        shared.ESPCar = p1_14;
+    end,
+    ["Name"] = "ESP Car",
+    ["Flag"] = "ESPCarToggle"
+});
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_15, a_15, b_15, c_15)
+        shared.ESPAirdrop = p1_15;
+    end,
+    ["Name"] = "ESP Airdrop",
+    ["Flag"] = "ESPAirdropToggle"
+});
+Visual:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_16, p2_16, p3_16, a_16, b_16, c_16)
+        shared.ESPTrap = p1_16;
+    end,
+    ["Name"] = "ESP Trap(Mines,Beartraps)",
+    ["Flag"] = "ESPTrapToggle"
+});
+local Movement = Window:CreateTab("Movement");
+Movement:CreateSection("Manuel Fly");
+Movement:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_17, p2_17, p3_17, p4_17, p5_17, p6_17, a_17, b_17, c_17)
+
+    end,
+    ["Name"] = "Manuel Fly",
+    ["Flag"] = "ManuelFlyToggle"
+});
+Movement:CreateSlider({
+    ["Callback"] = function(p1_18, p2_18, p3_18, p4_18, a_18, b_18, c_18)
+
+    end,
+    ["Name"] = "Manuel Fly Speed",
+    ["Suffix"] = "",
+    ["CurrentValue"] = 50,
+    ["Increment"] = 5,
+    ["Range"] = {
+        50,
+        250
+    },
+    ["Flag"] = "ManuelFlySpeed"
+});
+Movement:CreateInput({
+    ["Name"] = "Toggle Manuel Fly Key",
+    ["Flag"] = "ManuelFlyKeyInput",
+    ["CurrentValue"] = "V",
+    ["PlaceholderText"] = "Enter key (e.g. c,v,b)",
+    ["Callback"] = function(p1_19, p2_19, p3_19, p4_19, a_19, b_19, c_19)
+        Rayfield:Notify({
+            ["Image"] = "rewind",
+            ["Duration"] = 3,
+            ["Title"] = "Manuel Fly Key Changed",
+            ["Content"] = "New key: " .. p1_19
+        });
+    end,
+    ["RemoveTextAfterFocusLost"] = false
+});
+Movement:CreateSection("Jump Fly");
+Movement:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_20, p2_20, p3_20, p4_20, p5_20, p6_20, a_20, b_20, c_20)
+
+    end,
+    ["Name"] = "Jump Fly",
+    ["Flag"] = "JumpFlyToggle"
+});
+Movement:CreateSlider({
+    ["Callback"] = function(p1_21, p2_21, p3_21, p4_21, a_21, b_21, c_21)
+
+    end,
+    ["Name"] = "Jump Fly Speed",
+    ["Suffix"] = "",
+    ["CurrentValue"] = 15,
+    ["Increment"] = 5,
+    ["Range"] = {
+        15,
+        250
+    },
+    ["Flag"] = "JumpFlySpeed"
+});
+Movement:CreateInput({
+    ["Name"] = "On/Off Jump Fly Key",
+    ["Flag"] = "JumpFlyKeyInput",
+    ["CurrentValue"] = "F",
+    ["PlaceholderText"] = "Enter key (e.g. c,v,b)",
+    ["Callback"] = function(p1_22, p2_22, p3_22, p4_22, p5_22, p6_22, a_22, b_22, c_22)
+        Rayfield:Notify({
+            ["Image"] = "rewind",
+            ["Duration"] = 3,
+            ["Title"] = "Jump Fly Key Changed",
+            ["Content"] = "New key: " .. p1_22
+        });
+    end,
+    ["RemoveTextAfterFocusLost"] = false
+});
+local Misc = Window:CreateTab("Misc");
+Misc:CreateSection("Left Ctrl Delete");
+Misc:CreateToggle({
+    ["CurrentValue"] = false,
+    ["Callback"] = function(p1_23, p2_23, a_23, b_23, c_23)
+
+    end,
+    ["Name"] = "Left Ctrl Delete",
+    ["Flag"] = "LeftCtrlToggle"
+});
+Misc:CreateInput({
+    ["Name"] = "Undo Key",
+    ["Flag"] = "DeleteUndoKeyInput",
+    ["CurrentValue"] = "G",
+    ["PlaceholderText"] = "Enter key (e.g. c,v,b)",
+    ["Callback"] = function(p1_24, p2_24, p3_24, p4_24, p5_24, a_24, b_24, c_24)
+        Rayfield:Notify({
+            ["Image"] = "rewind",
+            ["Duration"] = 3,
+            ["Title"] = "Undo Key Changed",
+            ["Content"] = "New key: " .. p1_24
+        });
+    end,
+    ["RemoveTextAfterFocusLost"] = false
+});
+shared.AimlockEnabled = false;
+shared.DrawFovEnabled = false;
+shared.AimlockFOV = 300;
+shared.AimlockKey = "C";
+shared.ESPEnabled = false;
+shared.ESPBox = false;
+shared.ESPLines = false;
+shared.ESPNames = false;
+shared.ESPDistance = false;
+shared.ESPHealthBar = false;
+shared.ESPInCar = false;
+game:GetService("Players");
+local RunService = game:GetService("RunService");
+local UserInputService = game:GetService("UserInputService");
+local LocalPlayer = Players.LocalPlayer;
+shared.MobileLockActive = false;
+shared.AimlockMobileButtonsEnabled = false;
+local Circle = fenv.Drawing.new"Circle";
+Circle.Visible = false;
+Circle.Thickness = 1.5;
+Circle.Transparency = 1;
+local ViewportSize = workspace.CurrentCamera.ViewportSize;
+Circle.Position = ViewportSize / 2;
+local InputBegan = UserInputService.InputBegan;
+InputBegan:Connect(function(input, gameProcessedEvent, p3_25, a_25, b_25, c_25)
+    if not gameProcessedEvent then
+    else 
+
+    end;
+end);
+RunService.RenderStepped:Connect(function(deltaTime, p2_26, p3_26, a_26, b_26, c_26)
+    Circle.Radius = p1_6;
+    if not p1_2 then
+    else 
+        R162_Result = r162(0, 255, 0);
+    end;
+    if not R162_Result then
+    else 
+        Circle.Color = R162_Result;
+        if r347 then 
+
+        end;
+    end;
+    if not r347:FindFirstChild("HumanoidRootPart") then
+    else 
+        IsMouseButtonPressed = UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2);
+    end;
+    if not p1_2 then
+    else 
+        if not IsMouseButtonPressed then
+        else 
+            if not IsMouseButtonPressed then
+            else 
+                local _ = ViewportSize / 2;
+            end;
+        end;
+    end;
+    for for_key_5, for_val_5 in pairs(workspace:GetChildren()) do
+        if not for_key_5 then
+        else 
+
+        end;
+        if not for_val_5:IsA("Model") then
+        else 
+
+        end;
+        if for_val_5:FindFirstChild("Head") then 
+
+        end;
+        if not for_val_5:FindFirstChild("HumanoidRootPart") then
+        else 
+
+        end;
+        if (for_val_5.Name ~= LocalPlayer.Name) then
+        else 
+        end;
+    end;
+    Not_IsMouseButtonPressed_2 = not IsMouseButtonPressed;
+    if not Not_IsMouseButtonPressed_2 then 
+
+    end;
+    if not Not_IsMouseButtonPressed_2 then 
+        local _ = ViewportSize / 2;
+    end;
+    if p1_3 then 
+        AimlockMobileGUI = Instance.new"ScreenGui";
+    end;
+    AimlockMobileGUI.Name = "AimlockMobileGUI";
+    AimlockMobileGUI.Parent = game:GetService("CoreGui");
+    AimlockMobileGUI.ResetOnSpawn = false;
+    Enable_Aimlock = Instance.new"TextButton";
+    UDim2_New = UDim2.new;
+    Enable_Aimlock.Size = UDim2_New(0, 120, 0, 40);
+    Enable_Aimlock.Position = UDim2_New(1, -130, 1, -100);
+    Enable_Aimlock.Text = "Enable Aimlock";
+    Enable_Aimlock.BackgroundColor3 = r162(50, 50, 50);
+    Enable_Aimlock.TextColor3 = r173(1, 1, 1);
+    Enable_Aimlock.Parent = AimlockMobileGUI;
+    Lock_Tar = Instance.new"TextButton";
+    Lock_Tar.Size = UDim2_New(0, 120, 0, 40);
+    Lock_Tar.Position = UDim2_New(1, -130, 1, -50);
+    Lock_Tar.Text = "Lock Target";
+    Lock_Tar.BackgroundColor3 = r162(50, 50, 50);
+    Lock_Tar.TextColor3 = r173(1, 1, 1);
+    Lock_Tar.Parent = AimlockMobileGUI;
+    Enable_Aimlock.MouseButton1Click:Connect(function(a_52, b_52, c_52)
+        Not_P1_2 = not p1_2;
+        if not Not_P1_2 then 
+
+        end;
+        if not Not_P1_2 then 
+            r162(255, 0, 0);
+        end;
+    end);
+    Lock_Tar.MouseButton1Click:Connect(function(p1_53, p2_53, a_53, b_53, c_53)
+        if Not_P1_2 then
+        else 
+
+        end;
+    end);
+    Enable_Aimlock.InputBegan:Connect(function(input_6, p2_54, p3_54, p4_54, p5_54, a_54, b_54, c_54)
+        if (input_6.UserInputType == Enum.UserInputType.MouseButton1) then
+        else 
+
+        end;
+        if input_6.UserInputType ~= Enum.UserInputType.Touch then 
+
+        end;
+    end);
+    Enable_Aimlock.InputChanged:Connect(function(input_7, p2_55, p3_55, p4_55, p5_55, p6_55, a_55, b_55, c_55)
+        if input_7.UserInputType ~= Enum.UserInputType.MouseMovement then 
+
+        end;
+        if input_7.UserInputType ~= Enum.UserInputType.Touch then 
+
+        end;
+    end);
+    InputChanged_2 = UserInputService.InputChanged;
+    InputChanged_2:Connect(function(input_8, gameProcessedEvent_6, a_56, b_56, c_56)
+        Input_8_Is_Nil = (not input_8);
+        if not Input_8_Is_Nil then 
+
+        end;
+        if not Input_8_Is_Nil then 
+
+        end;
+    end);
+    Lock_Tar.InputBegan:Connect(function(input_9, p2_57, p3_57, p4_57, p5_57, a_57, b_57, c_57)
+        if (input_9.UserInputType == Enum.UserInputType.MouseButton1) then
+        else 
+
+        end;
+        if input_9.UserInputType ~= Enum.UserInputType.Touch then 
+        end;
+    end);
+    Lock_Tar.InputChanged:Connect(function(input_10, p2_58, p3_58, p4_58, p5_58, p6_58, a_58, b_58, c_58)
+        if input_10.UserInputType ~= Enum.UserInputType.MouseMovement then 
+
+        end;
+        if input_10.UserInputType ~= Enum.UserInputType.Touch then 
+        end;
+    end);
+    InputChanged_2:Connect(function(input_11, gameProcessedEvent_7, a_59, b_59, c_59)
+        Input_11_Is_Nil_2 = (not input_11);
+        if not Input_11_Is_Nil_2 then 
+
+        end;
+        if not Input_11_Is_Nil_2 then 
+        end;
+    end);
+end);
+shared.ShowMobileButtons = function(p1_27, p2_27, a_27, b_27, c_27)
+    if not AimlockMobileGUI then
+    else 
+
+    end;
+end;
+shared.HideMobileButtons = function(p1_28, p2_28, p3_28, p4_28, a_28, b_28, c_28)
+    if AimlockMobileGUI then 
+        AimlockMobileGUI:Destroy();
+    end;
+end;
+r162 = Color3.fromRGB;
+r162(255, 0, 0);
+game:GetService("RunService");
+game:GetService("Players");
+game:GetService("Lighting");
+local Vector2_New = Vector2.new;
+r173 = Color3.new;
+local R174_New = fenv.Drawing.new;
+for for_key_0, for_val_0 in next, Players:GetPlayers() do
+    if for_key_0 then 
+
+    end;
+    if for_val_0 == LocalPlayer then
+    else 
+        Square = R174_New"Square";
+    end;
+    Square.Thickness = 3;
+    Square.Filled = false;
+    Square.Color = r173();
+    Square.Visible = false;
+    Square.ZIndex = 1;
+    local Text = R174_New"Text";
+    Text.Center = true;
+    Text.Outline = true;
+    Text.Color = r162(255, 255, 255);
+    Text.Size = 11;
+    Text.Visible = false;
+    local Text_2 = R174_New"Text";
+    Text_2.Center = true;
+    Text_2.Outline = true;
+    Text_2.Color = r162(255, 255, 255);
+    Text_2.Size = 11;
+    Text_2.Visible = false;
+    local Square_2 = R174_New"Square";
+    Square_2.Filled = true;
+    Square_2.Color = r162(0, 0, 0);
+    Square_2.Visible = false;
+    local Square_3 = R174_New"Square";
+    Square_3.Filled = true;
+    Square_3.Visible = false;
+    local In_Car = R174_New"Text";
+    In_Car.Text = "In Car";
+    In_Car.Size = 11;
+    In_Car.Center = true;
+    In_Car.Color = r162(255, 140, 0);
+    In_Car.Outline = true;
+    In_Car.Visible = false;
+    In_Car.Position = Vector2_New(0, 0);
+    local Square_4 = R174_New"Square";
+    Square_4.Thickness = 1;
+    Square_4.Filled = false;
+    Square_4.Color = r162(255, 255, 255);
+    Square_4.Visible = false;
+    local Line = R174_New"Line";
+    Line.Thickness = 1;
+    Line.Color = r162(255, 255, 255);
+    Line.Visible = false;
+end;
+local PlayerAdded = Players.PlayerAdded;
+PlayerAdded:Connect(function(player, p2_29, a_29, b_29, c_29)
+    Square_5 = R174_New"Square";
+    Square_5.Thickness = 3;
+    Square_5.Filled = false;
+    Square_5.Color = r173();
+    Square_5.Visible = false;
+    Square_5.ZIndex = 1;
+    Text_3 = R174_New"Text";
+    Text_3.Center = true;
+    Text_3.Outline = true;
+    Text_3.Color = r162(255, 255, 255);
+    Text_3.Size = 11;
+    Text_3.Visible = false;
+    Text_4 = R174_New"Text";
+    Text_4.Center = true;
+    Text_4.Outline = true;
+    Text_4.Color = r162(255, 255, 255);
+    Text_4.Size = 11;
+    Text_4.Visible = false;
+    Square_6 = R174_New"Square";
+    Square_6.Filled = true;
+    Square_6.Color = r162(0, 0, 0);
+    Square_6.Visible = false;
+    Square_7 = R174_New"Square";
+    Square_7.Filled = true;
+    Square_7.Visible = false;
+    In_Car_2 = R174_New"Text";
+    In_Car_2.Text = "In Car";
+    In_Car_2.Size = 11;
+    In_Car_2.Center = true;
+    In_Car_2.Color = r162(255, 140, 0);
+    In_Car_2.Outline = true;
+    In_Car_2.Visible = false;
+    In_Car_2.Position = Vector2_New(0, 0);
+    Square_8 = R174_New"Square";
+    Square_8.Thickness = 1;
+    Square_8.Filled = false;
+    Square_8.Color = r162(255, 255, 255);
+    Square_8.Visible = false;
+    Line_2 = R174_New"Line";
+    Line_2.Thickness = 1;
+    Line_2.Color = r162(255, 255, 255);
+    Line_2.Visible = false;
+end);
+Players.PlayerRemoving:Connect(function(player_1, reason, p3_30, p4_30, a_30, b_30, c_30)
+
+end);
+RunService:BindToRenderStep("esp", Enum.RenderPriority.Camera.Value, function(p1_31, p2_31, a_31, b_31, c_31)
+    if player then 
+
+    end;
+    if (player ~= LocalPlayer) then 
+        FindFirstChild = workspace:FindFirstChild(player.Name);
+    end;
+    if FindFirstChild then 
+        if not FindFirstChild then
+        else 
+            Model = FindFirstChild:IsA("Model");
+        end;
+    end;
+    if Model then
+    else 
+
+    end;
+    if Model then
+    else 
+        if for_val_0 then 
+
+        end;
+    end;
+    if (for_val_0 ~= LocalPlayer) then 
+        FindFirstChild_2 = workspace:FindFirstChild(for_val_0.Name);
+    end;
+    if FindFirstChild_2 then 
+        if not FindFirstChild_2 then
+        else 
+            Model_2 = FindFirstChild_2:IsA("Model");
+        end;
+    end;
+    if Model_2 then
+    else 
+
+    end;
+    if Model_2 then
+    else 
+
+    end;
+end);
+local R162_Result_2 = r162(255, 0, 0);
+game:GetService("RunService");
+local Cars = workspace:WaitForChild("__cars");
+for for_key_1, for_val_1 in ipairs(Cars:GetChildren()) do
+    if for_key_1 then 
+
+    end;
+    if not for_val_1:IsA("Model") then
+    else 
+        Text_5 = fenv.Drawing.new"Text";
+    end;
+    Text_5.Size = 14;
+    Text_5.Center = true;
+    Text_5.Outline = true;
+    Text_5.Font = 2;
+    Text_5.Color = R162_Result_2;
+    Text_5.Visible = false;
+    Text_5.ZIndex = 3;
+end;
+Cars.ChildAdded:Connect(function(p1_32, p2_32, p3_32, p4_32, p5_32, a_32, b_32, c_32)
+    if not p1_32:IsA("Model") then
+    else 
+        Text_6 = fenv.Drawing.new"Text";
+    end;
+    Text_6.Size = 14;
+    Text_6.Center = true;
+    Text_6.Outline = true;
+    Text_6.Font = 2;
+    Text_6.Color = R162_Result_2;
+    Text_6.Visible = false;
+    Text_6.ZIndex = 3;
+end);
+Cars.ChildRemoved:Connect(function(p1_33, p2_33, p3_33, p4_33, a_33, b_33, c_33)
+    Dictionary = {
+        [p1_32] = {
+            ["distance"] = Text_6
+        },
+        [for_val_1] = {
+            ["distance"] = Text_5
+        }
+    };
+    if Dictionary[p1_33] then 
+    end;
+end);
+RunService:BindToRenderStep("CarESP", Enum.RenderPriority.Camera.Value, function(a_34, b_34, c_34)
+    if not p1_32 then
+    else 
+        if not p1_32 then
+        else 
+            if p1_32.Parent then 
+
+            end;
+        end;
+    end;
+    if not p1_7 then
+    else 
+
+    end;
+    if p1_14 then 
+        HumanoidRootPart = p1_32:FindFirstChild("HumanoidRootPart");
+    end;
+    if not HumanoidRootPart then
+    else 
+        if not HumanoidRootPart then
+        else 
+            if not HumanoidRootPart then
+            else 
+                WorldToViewportPoint = workspace.CurrentCamera:WorldToViewportPoint(HumanoidRootPart.Position);
+            end;
+        end;
+    end;
+    Vector2_New(WorldToViewportPoint.X, WorldToViewportPoint.Y);
+end);
+r162(0, 0, 255);
+game:GetService("RunService");
+game:GetService("Workspace");
+local _ = fenv.Drawing.new;
+local Heartbeat = RunService.Heartbeat;
+Heartbeat:Connect(function(deltaTime_1, p2_35, p3_35, a_35, b_35, c_35)
+    Airdrop = workspace:FindFirstChild("Airdrop");
+    if not Airdrop then
+    else 
+        Model_3 = Airdrop:IsA("Model");
+    end;
+    if Model_3 then
+    else 
+
+    end;
+    if not Model_3 then 
+
+    end;
+end);
+r162(128, 0, 128);
+game:GetService("RunService");
+game:GetService("Players");
+local _ = fenv.Drawing.new;
+RunService:BindToRenderStep("TrapESP", Enum.RenderPriority.Camera.Value, function(p1_36, p2_36, a_36, b_36, c_36)
+    if p1_7 then 
+
+    end;
+    if not p1_16 then
+    else 
+
+    end;
+end);
+local ReplicatedStorage = game.ReplicatedStorage;
+local Builds = ReplicatedStorage:FindFirstChild("Builds");
+if not ReplicatedStorage:FindFirstChild("Items") then
+else 
+    Fortification = ReplicatedStorage.Items:FindFirstChild("fortification");
+end;
+if not workspace then
+else 
+
+end;
+for for_key_2, for_val_2 in ipairs(workspace:GetChildren()) do
+    if not for_key_2 then
+    else 
+
+    end;
+    if for_val_2:IsA("Model") then 
+
+    end;
+    if for_val_2.Name ~= "landminebuild" then 
+
+    end;
+    if for_val_2.Name ~= "beartrapbuild" then 
+    end;
+end;
+workspace.ChildAdded:Connect(function(child, p2_37, a_37, b_37, c_37)
+    task.wait(0.1);
+    if not child:IsA("Model") then
+    else 
+
+    end;
+    if child.Name ~= "landminebuild" then 
+        Child_Name_Is_Beartrapbuild = (child.Name == "beartrapbuild");
+    end;
+    if not Child_Name_Is_Beartrapbuild then 
+
+    end;
+    if not Child_Name_Is_Beartrapbuild then 
+
+    end;
+end);
+if not Builds then
+else 
+
+end;
+for for_key_3, for_val_3 in ipairs(Builds:GetChildren()) do
+    if not for_key_3 then
+    else 
+
+    end;
+    if for_val_3:IsA("Model") then 
+
+    end;
+    if for_val_3.Name ~= "landminebuild" then 
+
+    end;
+    if for_val_3.Name ~= "beartrapbuild" then 
+    end;
+end;
+Builds.ChildAdded:Connect(function(p1_38, p2_38, a_38, b_38, c_38)
+    task.wait(0.1);
+    if not p1_38:IsA("Model") then
+    else 
+
+    end;
+    if p1_38.Name ~= "landminebuild" then 
+        P1_38_Name_Is_Beartrapbuild_2 = (p1_38.Name == "beartrapbuild");
+    end;
+    if not P1_38_Name_Is_Beartrapbuild_2 then 
+
+    end;
+    if not P1_38_Name_Is_Beartrapbuild_2 then 
+    end;
+end);
+if not Fortification then
+else 
+
+end;
+for for_key_4, for_val_4 in ipairs(Fortification:GetChildren()) do
+    if not for_key_4 then
+    else 
+
+    end;
+    if for_val_4:IsA("Model") then 
+
+    end;
+    if for_val_4.Name ~= "landminebuild" then 
+
+    end;
+    if for_val_4.Name ~= "beartrapbuild" then 
+    end;
+end;
+Fortification.ChildAdded:Connect(function(p1_39, p2_39, a_39, b_39, c_39)
+    task.wait(0.1);
+    if not p1_39:IsA("Model") then
+    else 
+
+    end;
+    if p1_39.Name ~= "landminebuild" then 
+        P1_39_Name_Is_Beartrapbuild_3 = (p1_39.Name == "beartrapbuild");
+    end;
+    if not P1_39_Name_Is_Beartrapbuild_3 then 
+
+    end;
+    if not P1_39_Name_Is_Beartrapbuild_3 then 
+    end;
+end);
+PlayerAdded:Connect(function(player_2, p2_40, p3_40, a_40, b_40, c_40)
+    player_2.CharacterAdded:Connect(function(p1_60, a_60, b_60, c_60)
+        p1_60:WaitForChild("Humanoid").Died:Connect(function(p1_62, p2_62, a_62, b_62, c_62)
+
+        end);
+    end);
+end);
+game:GetService("UserInputService");
+game:GetService("RunService");
+r347 = LocalPlayer.Character;
+if r347 then 
+    r347:WaitForChild("HumanoidRootPart");
+end;
+game:GetService("UserInputService");
+game:GetService("RunService");
+if r347 then 
+    HumanoidRootPart_2 = r347:WaitForChild("HumanoidRootPart");
+end;
+shared.ManuelFly = shared.ManuelFly or false;
+shared.ManuelFlySpeed = shared.ManuelFlySpeed or 50;
+if not shared.ManuelFlyKey then 
+    shared.ManuelFlyKey = "V";
+    fenv.startFlying = function(a_41, b_41, c_41)
+        if not r347 then
+        else 
+
+        end;
+        if not HumanoidRootPart_2 then
+        else 
+            BodyGyro = Instance.new"BodyGyro";
+        end;
+        BodyGyro.P = 90000;
+        Vector3_New = Vector3.new;
+        BodyGyro.MaxTorque = Vector3_New(9000000000, 9000000000, 9000000000);
+        BodyGyro.CFrame = HumanoidRootPart_2.CFrame;
+        BodyGyro.Parent = HumanoidRootPart_2;
+        BodyVelocity = Instance.new"BodyVelocity";
+        BodyVelocity.Velocity = Vector3_New(0, 0, 0);
+        BodyVelocity.MaxForce = Vector3_New(9000000000, 9000000000, 9000000000);
+        BodyVelocity.Parent = HumanoidRootPart_2;
+        RunService:BindToRenderStep("FlyMovement", Enum.RenderPriority.Character.Value + 1, function(p1_61, a_61, b_61, c_61)
+
+        end);
+    end;
+    fenv.stopFlying = function(a_42, b_42, c_42)
+        if not BodyGyro then
+        else 
+            BodyGyro:Destroy();
+        end;
+        if BodyVelocity then 
+            BodyVelocity:Destroy();
+        end;
+        RunService:UnbindFromRenderStep("FlyMovement");
+    end;
+end;
+InputBegan:Connect(function(input_1, gameProcessedEvent_1, p3_43, p4_43, p5_43, p6_43, a_43, b_43, c_43)
+    if gameProcessedEvent_1 then 
+
+    end;
+end);
+local InputEnded = UserInputService.InputEnded;
+InputEnded:Connect(function(input_2, gameProcessedEvent_2, p3_44, a_44, b_44, c_44)
+    if (input_2.KeyCode.Name == p1_19) then 
+        stopFlying();
+        RunService:UnbindFromRenderStep("FlyMovement");
+    end;
+end);
+game:GetService("UserInputService");
+game:GetService("RunService");
+game:GetService("Players");
+if not r347 then
+else 
+    r347:WaitForChild("HumanoidRootPart");
+end;
+shared.JumpFly = shared.JumpFly or false;
+shared.JumpFlySpeed = shared.JumpFlySpeed or 15;
+if not shared.JumpFlyKey then 
+    shared.JumpFlyKey = "F";
+end;
+LocalPlayer.CharacterAdded:Connect(function(character, a_46, b_46, c_46)
+    character:WaitForChild("HumanoidRootPart");
+end);
+InputBegan:Connect(function(input_3, gameProcessedEvent_3, p3_47, p4_47, p5_47, p6_47, a_47, b_47, c_47)
+    if gameProcessedEvent_3 then 
+
+    end;
+end);
+InputEnded:Connect(function(input_4, gameProcessedEvent_4, p3_48, p4_48, p5_48, p6_48, p7_48, a_48, b_48, c_48)
+    KeyCode_Is_Space = (input_4.KeyCode == Enum.KeyCode.Space);
+    if KeyCode_Is_Space then
+    else 
+
+    end;
+    if not KeyCode_Is_Space then 
+
+    end;
+end);
+Heartbeat:Connect(function(deltaTime_2, a_49, b_49, c_49)
+    Not_P1_20 = not p1_20;
+    if not Not_P1_20 then 
+
+    end;
+    if not Not_P1_20 then 
+
+    end;
+end);
+game:GetService("Players");
+game:GetService("UserInputService");
+local Mouse = LocalPlayer:GetMouse();
+shared.LeftCtrlDelete = shared.LeftCtrlDelete or false;
+if shared.DeleteUndoKey then
+else 
+    shared.DeleteUndoKey = "G";
+end;
+Mouse.Button1Down:Connect(function(p1_50, p2_50, a_50, b_50, c_50)
+    if p1_23 then 
+
+    end;
+    if not UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+    else 
+
+    end;
+    if Mouse.Target then 
+        Target = Mouse.Target;
+    end;
+    if not Target:IsA("BasePart") then
+    else 
+        Target.Transparency = 1;
+    end;
+    Target.CanCollide = false;
+    Target.CanQuery = false;
+end);
+InputBegan:Connect(function(input_5, gameProcessedEvent_5, p3_51, a_51, b_51, c_51)
+    if not gameProcessedEvent_5 then
+    else 
+
+    end;
+end);
